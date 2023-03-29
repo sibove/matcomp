@@ -1,0 +1,31 @@
+\select@language {italian}
+\select@language {italian}
+\contentsline {section}{\numberline {1}Prologo}{2}{section.1}
+\contentsline {section}{\numberline {2}Fondamenti teorici}{3}{section.2}
+\contentsline {subsection}{\numberline {2.1}Successioni di interi, sicurezza, strettezza, \dots }{5}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Mappe tra spazi metrici}{5}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Similitudini}{5}{subsection.2.3}
+\contentsline {subsubsection}{\numberline {2.3.1}Forma canonica}{6}{subsubsection.2.3.1}
+\contentsline {subsection}{\numberline {2.4}Distanza di Hausdorff}{7}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.5}Misure}{8}{subsection.2.5}
+\contentsline {subsection}{\numberline {2.6}Teorema fondamentale degli IFS}{9}{subsection.2.6}
+\contentsline {subsection}{\numberline {2.7}Misura di Hausdorff}{11}{subsection.2.7}
+\contentsline {subsection}{\numberline {2.8}Dimensione box}{12}{subsection.2.8}
+\contentsline {subsection}{\numberline {2.9}Propriet\IeC {\`a} di $\qopname \relax o{dim}_{H}$ e $\qopname \relax o{dim}_{B}$}{13}{subsection.2.9}
+\contentsline {subsection}{\numberline {2.10}Tecniche per calcolare $\qopname \relax o{dim}_{H}A$}{16}{subsection.2.10}
+\contentsline {subsection}{\numberline {2.11}Misure stazionarie}{20}{subsection.2.11}
+\contentsline {subsection}{\numberline {2.12}Dimensione di similitudine}{23}{subsection.2.12}
+\contentsline {subsection}{\numberline {2.13}Densit\IeC {\`a} locale e similitudini}{25}{subsection.2.13}
+\contentsline {subsection}{\numberline {2.14}Barnsley-Vince: IFS topologici, etc.}{28}{subsection.2.14}
+\contentsline {section}{\numberline {3}Joint spectral radius e norme estreme}{31}{section.3}
+\contentsline {subsection}{\numberline {3.1}Raggio spettrale congiunto}{31}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Corpi convessi e norme}{33}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}JSR e autoinsiemi}{35}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Norme di Protasov e Barabanov}{36}{subsection.3.4}
+\contentsline {section}{\numberline {4}Trasformazioni frattali}{40}{section.4}
+\contentsline {subsection}{\numberline {4.1}Frazioni continue e mappa di Farey}{41}{subsection.4.1}
+\contentsline {section}{\numberline {5}Gruppo di M\IeC {\"o}bius e geometria inversiva}{41}{section.5}
+\contentsline {subsection}{\numberline {5.1}Gruppi fuchsiani/kleiniani}{48}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Classificazione inversioni}{49}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}Insiemi limite}{50}{subsection.5.3}
+\contentsline {subsection}{\numberline {5.4}Unificazione di cap e punti}{50}{subsection.5.4}

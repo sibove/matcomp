@@ -1,0 +1,817 @@
+%!TEX root = ../matcomp.tex
+%!TEX encoding = UTF-8 Unicode
+
+\section{Prologo}
+
+\begin{definizione}
+	Le \emph{similitudini di $\R^{n}$} sono trasformazioni che hanno la forma 
+	$$v \mapsto rOv + t, r\in\R_{>0},\;t\in\R^{n},$$
+	con $O\in O_{n}(\R)$.
+\end{definizione}
+Osserviamo che stiamo usando l'intero gruppo ortogonale, per cui sono ammesse anche mappe che invertono l'orientazione dello spazio.
+Le similitudini formano un gruppo: 
+$$\text{Sim} = \text{Trasl} \rtimes \R_{>0} \times O_{n}\R.$$
+
+Per capire cosa significa $\rtimes$, facciamo un piccolo ripasso di algebra. 
+Una \emph{sequenza esatta corta} è una successione di mappe tra gruppi 
+$$1 \to H \to G \to T \to 1$$
+tali che l'immagine di ogni mappa è il nucleo della successiva. 
+Per un noto teorema di isomorfismo, questo ci consente di dire che $T\simeq G/H$. 
+Quindi a meno di isomorfismi, $G$ è prodotto di $H$ e $T$. 
+Per mettere in evidenza che $H$ è un sottogruppo normale, scriviamo quindi $H \rtimes T = G$.
+
+Nel nostro caso particolare abbiamo la sequenza esatta
+$$1 \to \text{Trasl} \to \text{Sim} \to \R_{>0}\times O_{n}\R \to 1$$
+e si può vedere facilmente che $\text{Trasl}\triangleleft\text{Sim}$ perché se indichiamo come $T_{t}$ la traslazione di $t$,
+$$GT_{t}G^{-1} = T_{G(t)}\quad \forall G\in\text{Sim}.$$
+Infatti vale $G\circ T_{t} = T_{G(t)}\circ G$, e per vederlo basta considerare un vettore $v\in\R^{n}$ e ricordare che gli elementi di $\text{Sim}$ sono lineari. 
+Otteniamo 
+$$(G\circ T_{t})(v) = G(v+t) = G(v) + G(t) = (T_{G(t)}\circ G)(v).$$
+
+Possiamo rappresentare un generico elemento $v\mapsto rOv+t$ di \text{Sim} in forma matriciale come 
+   $$\begin{pmatrix}
+      A & t \\
+      0 & 1 \\
+   \end{pmatrix}
+   \begin{pmatrix}
+   v\\1
+   \end{pmatrix}$$
+ponendo ovviamente $A:=rO$. 
+Questa rappresentazione risulta molto utile per implementare l'applicazione di similitudini in un calcolatore.
+
+\begin{definizione}
+	Consideriamo un insieme $S:=\{S_{1},\dots,S_{N}\}$ di similitudini di $\R^{n}$. L'\emph{operatore di Hutchinson associato a $S$} è la mappa da $\R^{n}$ in sé definita da 
+	$$\Phi_{S}(U) := S_{1}[U]\cup \dots \cup S_{N}[U]$$
+	dove $U\subseteq\R^{n}$.
+\end{definizione}
+
+Vediamo ora l'enunciato di un teorema fondamentale. 
+\begin{teorema}
+	Se tutte le similitudini $S_{i}$ sono contrazioni (i.e., $0<r_{1},\dots,r_{N}<1$) allora
+	\begin{itemize}
+		\item $\Phi_{S}$ un unico punto fisso, e questo è compatto; 
+		\item Partendo da un insieme compatto e iterando $\Phi_{S}$, la successione di insiemi ottenuta converge (in una appropriata metrica) al punto fisso.
+	\end{itemize}
+\end{teorema}
+\begin{osservazione}
+	Se $K$ è compatto, anche $\Phi_{S}(K)$ lo è. Infatti le similitudini sono continue, e l'unione finita di compatti è un compatto. 
+\end{osservazione}
+
+\begin{esempio}[insieme di Cantor]
+	Consideriamo $\R$ e le due mappe 
+	$$S_{1}:x\mapsto \frac{1}{3}x\quad S_{2}:x\mapsto \frac{1}{3}x + 2/3.$$
+	Ovviamente si tratta di contrazioni, per cui si applica il teorema enunciato prima.
+	Posto $S = \{S_{1},S_{2}\}$, vediamo che l'insieme di Cantor è un punto fisso per l'operatore di Hutchinson:
+	$$\Phi_{S}(C) = \Phi_{S}(\bigcap\{\text{livelli di }C\}) = \bigcap \Phi_{S}(\{\text{livelli di }C\}) = C.$$
+\end{esempio}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\newpage
+\section{Fondamenti teorici}
+
+L'ambiente entro il quale svilupperemo la teoria consta di uno spazio metrico completo $(X,d)$ localmente compatto e \emph{second countable}, ossia con base numerabile. Un esempio di questi spazi è il classico $(\R^{d}, \|\cdot\|_{2})$. 
+Spesso si dice che $X$ è uno \emph{spazio polacco} se è uno spazio topologico su cui si può mettere una metrica che lo rende completo (ad esempio $(0,1)$ è polacco: è completo con certe metriche). 
+
+\begin{definizione}
+	Diremo che una funzione $F:X\to Y$ è \emph{propria} se è continua e la controimmagine di ogni compatto è compatta. 
+\end{definizione}
+
+\begin{teorema}
+	Sia $F:X\to Y$ propria e sia $(x_{n})\subset X$ una successione la cui $F$-immagine converge a qualche $y\in Y$. Allora esiste una sottosuccessione $(x_{n_{k}})$ tale che $x_{n_{k}}\xrightarrow[]{k\to+\infty}x\in F^{-1}\{y\}$.
+\end{teorema}
+\begin{proof}
+	Poiché $Y$ è localmente compatto, senza perdita di generalità possiamo supporre che tutta la successione $(Fx_{n})$ sia contenuta in un intorno compatto $K\ni y$. Dunque $(x_{n})\subset F^{-1}[K]$ che è compatto perché $F$ è propria, e dunque (per una nota caratterizzazione) è pure sequenzialmente compatto. Allora esiste una sottosuccessione per cui $x_{n_{k}}\to x\in F^{-1}[K]$. Poiché $F$ è continua, abbiamo allora $Fx_{n_{k}}\to Fx$; d'altra parte, $Fx_{n_{k}}\to y$, per cui dall'unicità del limite segue che $Fx = y$.
+\end{proof}
+
+\begin{corollario}
+	Ogni mappa propria è chiusa (cioè manda chiusi in chiusi). 
+\end{corollario}
+\begin{proof}
+	Sia $C\subset X$ chiuso e sia $y$ un punto di accumulazione per $F[C]$. Per definizione esiste una successione approssimante $Fx_{n}\to y$, che possiamo sollevare a $X$ in modo che $x_{n}\in C,\,\forall n\in \N$. Per il teorema precedente, possiamo estrarre una sottosuccessione $x_{n_{k}}\to x\in F^{-1}\{y\}$. Essendo $C$ chiuso si ha $x\in C$, ma allora $y = Fx \in F[C]$.
+\end{proof}
+
+\begin{corollario}
+	Sia $F:X\to Y$ continua e iniettiva con $X$ compatto. Allora $F\big|_{X}:X\to F[X]$ è un omeomorfismo. 
+\end{corollario}
+\begin{proof}
+	Bisogna solo verificare che l'inversa è continua, o equivalentemente che $F$ è aperta, o equivalentemente che $F$ è chiusa. Questo è vero grazie al corollario precedente perché $F$ è propria: infatti un compatto in $Y$ è chiuso, per cui per continuità la sua controimmagine è chiusa in $X$ e un chiuso in un compatto è compatto. 
+\end{proof}
+
+\begin{definizione}
+	Una contrazione $F:X\to X$ si dice \emph{stretta} se $\exists\lambda\in [0,1)$ t.c. 
+	$$\forall x, x'\in X,\; d(Fx, Fx')\leq \lambda d(x,x').$$
+\end{definizione}
+
+\begin{teorema}[delle contrazioni]
+	Sia $F:X\to X$ una contrazione stretta sullo spazio metrico completo $(X,d)$. Allora $F$ ha uno e un solo punto fisso, e questo è il limite della successione $x_{0}$, $x_{1} = Fx_{0}$, $x_{2} = Fx_{1}$, \dots.
+\end{teorema}
+\begin{proof}
+	Consideriamo la successione definita nell'enunciato. Dato che $F$ è una contrazione stretta, diciamo di costante $\lambda$, abbiamo che $d(x_{2},x_{1}) = d(Fx_{1}, Fx_{0}) \leq \lambda d(x_{1},x_{0})$, e quindi per induzione
+	$$d(x_{n+1}, x_{n})\leq \lambda^{n}d(x_{1},x_{0})$$
+	e il secondo membro tende a 0 per $n\to\infty$ dato che $\lambda \in [0,1)$ e $d(x_{1},x_{0})$ è finita. 
+	Per usare la completezza dimostriamo che la successione $(x_{n})$ è di Cauchy. Siano quindi $m>n$ e consideriamo la seguente maggiorazione 
+	\begin{align*}
+		d(x_{m},x_{n}) &\leq 
+		\lambda^{n}d(x_{m-n}, x_{0})\leq \\&\leq
+		\lambda^{n}(d(x_{m-n}, x_{m-n-1}) + \dots + d(x_{1},x_{0}))\leq \\ &\leq
+		\lambda^{n}(\lambda^{m-n-1} + \dots + 1)d(x_{1},x_{0}) \leq\\&\leq
+		\left(\sum_{k = 0}^{+\infty}\lambda^{k}\right)\lambda^{n}d(x_{1},x_{0}) = \frac{1}{1-\lambda}\lambda^{n}d(x_{1},x_{0})\xrightarrow{n\to\infty}0
+	\end{align*}
+	dove il limite segue per quello calcolato in precedenza e perché ovviamente $1/(1-\lambda)$ è finito. 
+	Quindi $(x_{n})$ è una successione di Cauchy in $X$ che è uno spazio completo, per cui $x_{n}\xrightarrow{n\to\infty}\bar x\in X$.
+	
+	Ora vediamo che tale limite è punto fisso per la contrazione $F$. Consideriamo infatti la relazione
+	$$d(\bar x, Fx_{n}) = d(\bar x, x_{n+1}).$$
+	Il termine di sinistra tende per continuità di $F$ e $d$ a $d(\bar x, F\bar x)$, mentre il termine di destra tende (sempre per la continuità della distanza) a $d(\bar x, \bar x) = 0$. Per l'unicità del limite segue che $d(\bar x, F\bar x) = 0$.
+	
+	Infine verifichiamo l'unicità: siano $\bar x$, $\bar x'$ due punti fissi per $F$. Allora abbiamo, usando la definizione di contrazione, 
+	$$d(\bar x, \bar x') = d(F\bar x, F\bar x')\leq \lambda d(\bar x, \bar x')$$
+	cioè $(1-\lambda)d(\bar x, \bar x') \leq 0$. Dato che $1-\lambda > 0$, $d(\bar x, \bar x') \leq 0$. Per la non negatività della distanza, questo implica che $d(\bar x, \bar x') = 0$, e quindi che $\bar x = \bar x'$.
+\end{proof}
+%%%%%%%%%%%%%%%%%%%%
+\begin{definizione}
+	Uno spazio metrico si dice \emph{localmente compatto} se ogni punto dello spazio ha un intorno la cui chiusura è compatta. 
+\end{definizione}
+
+\begin{esempio}
+	Gli spazi $\R^{n}$ e $\CC^{n}$ sono localmente compatti. Gli spazi di Hilbert su $\CC$ o su $\R$ di dimensione infinita \emph{non} sono localmente compatti (un esempio concreto è $\ell^{2}$). Neanche $\mathbb{Q}$ con la topologia indotta da $\R$ è localmente compatto. 
+\end{esempio}
+
+	Per completezza (della spiegazione) ricordiamo alcuni risultati noti.
+
+\begin{teorema}
+	Per uno spazio metrico $(X,d)$ sono equivalenti:
+	\begin{itemize}
+		\item $(X,d)$ è compatto; 
+		\item $(X,d)$ è numerabilmente compatto; 
+		\item $(X,d)$ è sequenzialmente compatto; 
+	\end{itemize}
+\end{teorema}
+
+\begin{teorema}
+	Se $A\subseteq(X,d)$, $A$ è compatto se e solo se $A$ è chiuso e totalmente limitato. Se vale una, e quindi entrambe, le condizioni, $A$ è chiuso e limitato. 
+\end{teorema}
+
+\begin{teorema}
+	Uno spazio vettoriale topologico è localmente compatto se e solo se ha dimensione algebrica finita. 
+\end{teorema}
+
+\subsection{Successioni di interi, sicurezza, strettezza, \dots}
+
+\subsection{Mappe tra spazi metrici}
+
+	Consideriamo la mappa $F:X\to X$, e definiamo la \emph{costante di Lipschitz di $F$} come 
+$$\text{Lip}F = \sup_{x\neq y}\frac{d(F(x), F(y))}{d(x,y)}.$$
+Segue dalla definizione che se $\text{Lip}F = \lambda$, allora $d(F(x),F(y))\leq\lambda d(x,y)$ per ogni $x,y\in X$ e inoltre la costante di Lipschitz è la più piccola con tale proprietà. 
+	Diciamo che $F$ è \emph{lipschitziana} se $\text{Lip}F<\infty$ e che $F$ è una \emph{contrazione} se $\text{Lip}F < 1$.
+Come abbiamo dimostrato in precedenza, le contrazioni hanno un unico punto fisso. 
+
+	Supponiamo di avere una famiglia finita $\mathcal S = \{S_{1},\dots, S_{N}\}$ di mappe $S_{i}:X\to X$. Ci troveremo spesso a comporne una successione, e per rendere la notazione migliore scriveremo $S_{i_{1}\dots i_{p}} := S_{i_{1}}\circ \dots \circ S_{i_{p}}$.
+
+
+\subsection{Similitudini}
+
+	Diciamo che $S:X\to X$ è una \emph{similitudine} se $d(S(x), S(y)) = rd(x,y)$ per ogni $x,y\in X$ per un certo $r$ fissato. Focalizzandoci sul caso di mappe su $\R^{n}$, scriveremo $T_{b}: x\mapsto x + b$ per la \emph{traslazione} e $D_{r}: x\mapsto rx$ per la \emph{dilatazione} di fattore $r\geq0$.
+	
+\begin{proposizione}
+	$S:\R^{n}\to\R^{n}$ è una similitudine se e solo se si può scrivere come $$S = D_{r}\circ T_{b}\circ O$$ per opportuni $r\geq0$, $b\in\R^{n}$ e $O\in O_{n}\R$.
+\end{proposizione}
+\begin{proof}
+	$(\Leftarrow)$ è ovvio. 
+	$(\Rightarrow)$ Sia quindi $S$ una similitudine con $\text{Lip}S = r \neq 0$. Definiamo la mappa $$g(x) = r^{-1}(S(x)-S(0)).$$
+	Essa è un'isometria che fissa l'origine $0\in\R^{n}$. Applicando l'identità di polarizzazione, dato che preserva la norma essa preserva anche il prodotto scalare (*). 
+	
+	Sia ora $\{e_{i}\}$ una base ortonormale di $\R^{n}$. Per quanto appena osservato anche $\{g(e_{i})\}$ è una base ortonormale. Quindi se prendiamo un generico $x = \sum \langle x, e_{i}\rangle e_{i}$, abbiamo che 
+	$$g(x) = \sum\langle g(x),g(e_{i})\rangle g(e_{i}) \overset{*}{=} \sum \langle x, e_{i}\rangle g(e_{i})$$
+	cioè $g$ è anche lineare. 
+	Questo, unito al fatto che sia un'isometria che fissa l'origine, implica che $g\in O_{n}\R$.
+	
+	Ora è facile concludere perché invertendo la relazione che definisce $g$ si ottiene
+	$$S(x) = r[g(x) + r^{-1}S(0)] = D_{r}\circ T_{r^{-1}S(0)}\circ g (x).$$
+\end{proof}
+
+\begin{osservazione}
+	La stessa dimostrazione vale anche su spazi complessi, sostituendo le trasformazioni ortogonali con quelle unitarie. Infatti la cruciale identità di polarizzazione vale anche in questo caso.  
+\end{osservazione}
+
+\subsubsection{Forma canonica}
+
+\begin{proposizione}
+	Consideriamo una similitudine $S:\R^{n}\to\R^{n}$ di ragione $0<r<1$, con punto fisso $a\in\R^{n}$. Posto $O^{a}:=T_{a}\circ O\circ T_{a}^{-1}$ e $D_{r}^{a}:= T_{a}\circ D_{r}\circ T_{a}^{-1}$ per una opportuna $O\in O_{n}\R$, vale
+	$$S = D_{r}^{a}\circ O_{a}.$$ 
+\end{proposizione}
+\begin{proof}
+	Abbiamo $S = D_{r}^{a}\circ (D_{r}^{a})^{-1}\circ S =: D_{r}^{a}\circ R$. Osserviamo che $R$ fissa $a$ ed è un'isometria. Quindi $R$ è del tipo $T_{a}\circ O \circ T_{a}^{-1}$.
+\end{proof}
+
+	Quindi ogni similitudine si può pensare come l'applicazione successiva di una trasformazione ortogonale centrata in $a$ e di una dilatazione di ragione $r$ sempre centrata in $a$. Quindi una similitudine si può caratterizzare dando tre elementi: trasformazione ortogonale, punto fisso e ragione. Questo porta a definire la \emph{forma canonica}
+	$$S = (a,r,O).$$
+	
+\begin{osservazione}
+	Se consideriamo due similitudini $S_{1} = (a_{1}, r_{1}, O_{1})$ e $S_{2} = (a_{2}, r_{2}, O_{2})$, allora $S_{1}\circ S_{2} = (a, r, O)$ dove $r = r_{1}r_{2}$, $O = O_{1}\circ O_{2}$ e l'espressione per il nuovo punto fisso è 
+	$$a = a_{2} + (I-r_{1}r_{2}O_{1}O_{2})^{-1}(I-r_{1}O_{1})(a_{1}-a_{2}).$$
+\end{osservazione}
+
+
+\subsection{Distanza di Hausdorff}
+	
+	Dato $x\in X$ e $A\subset X$, la \emph{distanza} tra $x$ e $A$ è definita come 
+	$$d(x,A) := \inf \{d(x,a):\, a\in A\}.$$
+	Se $A\subset X$ e $\e>0$, definiamo l'\emph{$\e$-ingrandimento} di $A$ come 
+	$$A_{\e} := \{x\in X:\, d(x,A)<\e\}.$$
+	
+\begin{definizione}
+	La \emph{distanza asimmetrica} $\vec d (A,B) = \sup\{d(a,B):\,a\in A\} = \min\{\e>0:\, A\subseteq B_{\e}\}$, che si può pensare come il sup delle distanze che un ipotetico nemico mi obbliga a percorrere per andare in $B$ partendo da $A$. 
+\end{definizione}
+	
+	Simmetrizziamo la distanza, ottenendo la seguente definizione. 
+\begin{definizione}
+	La \emph{distanza di Hausdorff} è 
+	$$d(A,B) := \max\{\vec d(A,B), \vec d(B,A)\}.$$
+\end{definizione}
+
+\begin{osservazione}
+	In generale è solo una pseudometrica, infatti la non degenerazione della distanza fallisce considerando ad esempio $A = [0,1]$ e $B = (0,1]$. Tuttavia basta restringersi a considerare insiemi chiusi per ottenere una metrica valida (esercizio, l'unica cosa non ovvia è la disuguaglianza triangolare).
+	Un'importante proprietà dello spazio dei chiusi limitati con la metrica di Hausdorff è che è completo. Inoltre se $K\subset X$ è compatto, anche $\{\text{compatti}\}\cap \{A:A\subset K\}$ è compatto. 
+\end{osservazione}
+
+\begin{prop}[della metrica di Haudorff]
+	Data $F:X\to X$, 
+	\begin{enumerate}
+		\item se $\text{Lip}F = r$, allora $\forall K_{1},K_{2}$ compatti vale $d(FK_{1}, FK_{2})\leq rd(K_{1},K_{2})$;
+		\item $d\left(\bigcup_{i\in I}A_{i}, \bigcup_{i\in I}B_{i}\right)\leq \sup_{i\in I}d(A_{i},B_{i})$.
+	\end{enumerate}
+\end{prop}
+\begin{proof}
+	Iniziamo con il primo punto, osservando che basta dimostrare la tesi per le distanze orientate e poi passando al massimo la tesi segue facilmente. 
+	Per prima cosa osserviamo che preso $x\in K_{1}$ vale $d(Fx, FK_{2})\leq r d(x,K_{2})$. Infatti dato che $K_{2}$ è compatto, esiste $y_{0}\in K_{2}$ tale che $d(x,K_{2}) = d(x,y_{0})$. Allora
+	$$d(Fx,FK_{2})\leq d(Fx, Fy_{0})\leq rd(x,y_{0}) = rd(x,K_{2}).$$
+	Quindi abbiamo che 
+	$$\vec d(FK_{1},FK_{2}) = \max_{x\in K_{1}}d(Fx,FK_{2}) \leq r\max_{x\in K_{1}}d(x,K_{2}) = r\vec d(K_{1},K_{2}),$$
+	per cui si conclude come detto all'inizio. 
+	
+	Il secondo punto è facile, basta convincersi che nel l.h.s. si ha più scelta sui percorsi possibili sui cui minimizzare la distanza. 
+\end{proof}
+
+
+\subsection{Misure}
+
+Nel corso di Probabilità I abbiamo visto la definizione di misura dovuta a Kolmogorov. 
+Ora vediamo una generalizzazione data da Caratheodory.
+
+\begin{definizione}
+	Una \emph{misura esterna} $\mu^{*}$ su $X$ è una mappa $\mu^{*}:\mathcal P(X)\to [0,+\infty]$ tale che 
+	\begin{enumerate}
+		\item $\mu^{*}(\emptyset) = 0$;
+		\item $\mu^{*}\left(\bigcup_{i\in I}E_{i}\right) \leq \sum_{i\in I}\mu^{*}(E_{i})$;
+		\item $A\subseteq B\implies\mu^{*}(A)\leq \mu^{*}(B)$.
+	\end{enumerate}
+	Le ultime due condizioni possono essere equivalentemente sostituite da 
+	\begin{enumerate}
+		\item[2b.] $A\subseteq\bigcup_{i\in I}B_{i}\implies \mu^{*}(A)\leq \sum_{i\in I}\mu^{*}(B_{i})$.
+	\end{enumerate}
+\end{definizione}
+\begin{osservazione}
+	La misura esterna è definita su \emph{tutti} gli elementi dell'insieme delle parti di $X$.
+\end{osservazione}
+
+	Come si collega tale definizione con quella di Kolmogorov? La risposta è nella seguente definizione.
+\begin{definizione}
+	$A\subset X$ è \emph{misurabile nel senso di Caratheodory} se $\forall T\subset X$ vale 
+	$$\mu^{*}(T) = \mu^{*}(T\cap A) + \mu^{*}(T\cap A^{C}).$$
+\end{definizione}
+	Si dimostra che tale classe di insiemi è una $\sigma$-algebra $\mathcal F$ su $X$, e $\mu := \mu^{*}\big|_{\mathcal F}$ è una ``vera'' misura, cioè lo è nel senso di Kolmogorov.
+	
+\begin{definizione}
+	Una misura $\mu^{*}$ su $X$ si dice \emph{Borel-regolare} se tutti i boreliani di $X$ sono misurabili e $\forall A\subset X$ esiste un boreliano $B\supset A$ tale che $\mu^{*}(A) = \mu^{*}(B)$.
+\end{definizione}
+	In spazi metrici completi la regolarità si può esprimere in modo diverso (come fatto in Analisi II), potendo caratterizzare la misura di un insieme $A\subset X$ come estremo superiore sulle misure dei compatti contenuti in $A$ o come estremo inferiore delle misure degli aperti che lo contengono. 
+	
+\begin{definizione}
+	Denoteremo con $\mathcal M$ l'insieme di misure Borel-regolari con supporto limitato e massa totale finita, e in particolare indicheremo le misure di tale insieme che sono delle probabilità con 
+	$$\mathcal M^{1} := \{\mu\in\mathcal M|\;\mathbf{M}(\mathcal M) = 1\}.$$
+\end{definizione}
+\begin{definizione}
+	Definiamo $\mathcal{BC}(X) := \{f:X\to\R:\, f\text{ è continua e limitata sui limitati}\}$. 
+\end{definizione}
+	Considerando una misura $\mu\in\mathcal M$ e una $\phi\in\mathcal{BC}(X)$, definiamo $\mu(\phi):=~\int\phi d\mu$.
+Si ha che $\mu:\mathcal{BC}\to[0,\infty)$, $\mu$ è lineare ed è positiva. 
+
+Se poi consideriamo una funzione $f:X\to X$ misurabile, possiamo definire il push-forward $f_{*}:\mathcal M\to\mathcal M$ come $(f_{*}\mu)(E):=\mu(f^{-1}[E])$. Equivalentemente, vale $(f_{*}\mu)(\phi) = \mu(\phi\circ f)$, ossia il teorema del portare in giro. Osserviamo che la massa totale si conserva, ossia $\mathbf{M}(f_{*}\mu) = \mathbf{M}(\mu)$.
+
+	Ora vediamo che si può immergere $\mathcal M$ nell'insieme $\R^{\mathcal{BC}}$. Infatti se fissiamo un elemento $\mu\in\mathcal M$ abbiamo a disposizione per ogni $\phi\in\mathcal {BC}$ la proiezione sulla ``$\phi$-esima'' componente, $\pi_{\phi}(\mu):= \int\phi d\mu$. Resta quindi definita la mappa $\mu\mapsto(\pi_{\phi}(\mu))_{\phi}$ che associa ad una misura tutti i valori degli integrali delle funzioni in $\mathcal{BC}$ fatte con essa. 
+Tale associazione è iniettiva, e inoltre si vede che $\mathcal M$ eredita la \emph{topologia debole} da $\R^{\mathcal{BC}}$, che ha la topologia prodotto indotta da $\R$.
+Una base della topologia debole sono gli aperti $\{\mu:\,a<\mu(\phi)<b\}$ con $a<b$ reali e $\phi\in\mathcal{BC}$ arbitraria.
+
+\subsection{Teorema fondamentale degli IFS}
+
+Consideriamo un insieme finito $S = \{S_{0},\dots,S_{N-1}\}$ di contrazioni con costanti di Lipschitz $0<r_{0},\dots,r_{N-1}<1$. 
+Definiamo poi $N^{\omega} = \{(i_{0}i_{1}\dots) =: \mathbf i |i_{j}\in \{0,\dots,N-1\}\}$ e useremo la seguente notazione $\mathbf i\upharpoonright t:=i_{0}\dots i_{t-1}$ per la restrizione ai primi $t$ elementi della successione. 
+Per $w\in N^{<\omega}$ finita, scriveremo $S_{w}:=S_{i_{0}}\circ \dots \circ S_{i_{t-1}}$ e se $A\subseteq\R^{n}$, $A_{w}:=S_{w}[A]$.
+Infine denotiamo con $\Phi:\mathcal K\to\mathcal K$ l'operatore di Hutchinson associato ad $S$.
+
+\begin{osservazione}
+	Vale $\Phi^{n}(A) = \bigcup_{w\in N^{n}}A_{w}$, infatti 
+	\begin{align*}
+		\Phi(A) &= S_{0}[A]\cup S_{N-1}[A] = A_{0}\cup\dots\cup A_{N-1}\\
+		\Phi^{2}(A) &= S_{0}[S_{0}A\cup\dots\cup S_{N-1}A]\cup\dots\cup S_{N-1}[S_{0}A\cup\dots\cup S_{N-1}A]\\ 
+		&= \bigcup_{i,j}S_{i}S_{j}A = \bigcup_{w\in N^{2}}A_{w}
+	\end{align*}
+	e si conclude per induzione.
+\end{osservazione}
+
+\begin{teorema}[fondamentale di caratterizzazione degli IFS strettamente contrattivi]
+	Con le ipotesi fatte sopra, valgono i seguenti risultati.
+	\begin{enumerate}
+		\item $\exists! K\in\mathcal K$ punto fisso per $\Phi$.
+		\item $\forall w\in N^{<\omega}$, $K_{w} = K_{w0}\cup\dots\cup K_{w(N-1)}$.
+		\item $\forall\mathbf i\in N^{\omega}$, vale la catena
+		$$K = K_{\mathbf i\upharpoonright0} \supseteq K_{\mathbf i\upharpoonright1} \supseteq K_{\mathbf i\upharpoonright2} \supseteq\dots$$
+		e l'intersezione di tutti gli elementi della catena è un singoletto $\{\pi(\mathbf i)\}$.
+		La mappa $\pi:N^{\omega}\to K$ è suriettiva. 
+		\item Per ogni $w\in N^{<\omega}$, sia $s_{w}$ l'unico punto fisso di $S_{w}$. Allora $s_{w} = \pi(\bar w)$, dove $\bar w = www\dots$. Inoltre $\pi(\mathbf i) = \lim_{n\to\infty}s_{\mathbf i\upharpoonright n}$.
+		\item Il punto fisso $K$ è la chiusura topologica dei punti fissi delle composizioni finite, ossia $K = \{s_{w}:w\in N^{<\omega}\}^{f}$.
+		\item $S_{w}[A_{u}] = A_{wu}$ e $S_{w}(\pi(\mathbf i)) = \pi(w\mathbf i)$.
+		\item $\pi$ è continua.
+		\item Sia $H\in\mathcal K$ qualsiasi. Allora $\Phi^{n}(H)\xrightarrow{n\to+\infty}K$ nella metrica di Hausdorff. Inoltre, con la distanza di Hausdorff, vale 
+		$$\forall \mathbf i \in N^{\omega}, \quad d(\pi(\mathbf i), H_{\mathbf i\upharpoonright n})\to0$$
+		uniformemente, cioè con velocità indipendente da $\mathbf i$.
+		\item[8'.] La costruzione di $\pi(\mathbf i)$ vale anche usando un qualsiasi $H\in\mathcal K$ tale per cui $\Phi(H)\subseteq H$.
+	\end{enumerate}
+\end{teorema}
+\begin{proof}
+	Per (1) e la prima parte di (8) basta osservare che $\Phi$ è una contrazione stretta su $\mathcal K$ e il risultato segue dal teorema delle contrazioni. In effetti presi $H,T\in \mathcal K$ si ha, usando le proprietà della distanza di Hausdorff, che vale 
+	$$d(\Phi T, \Phi H) = d(\cup_{i}T_{i},\cup_{i}H_{i})\leq \max_{i}d(T_{i},H_{i}) \leq\underbrace{\max_{i}r_{i}}_{=:r<1}d(T,H)= rd(T,H).$$
+	
+	Sia ora $K$ il punto fisso di $\Phi$. Per l'osservazione fatta prima dell'enunciato si ha $K = \bigcup_{u\in N^{n}}K_{u}$, e più in generale $K_{w} = \bigcup_{u\in N^{n}}K_{wu}$. 
+	Per dimostrare (3) va verificata solo la suriettività di $\pi$, in quanto gli altri risultati sono ovvi (basta osservare che il diametro degli insiemi della catena si restringe e ricordare che sono compatti). 
+	Sia dunque $x\in K = K_{0}\cup\dots\cup K_{N-1}$. Dato che $x$ sta nell'unione di tali insiemi, esiste (almeno) un $i_{0}\in\{0,\dots,N-1\}$ per cui $x\in K_{i_{0}}$. 
+	Però ovviamente il discorso si può ripetere perché $K_{i_{0}} = K_{i_{0}0}\cup\dots\cup K_{i_{0}(N-1)}$ per cui esiste un $i_{1}\in\{0,\dots,N-1\}$ per cui $x\in K_{i_{0}i_{1}}$. 
+	Per induzione si prosegue, costruendo un $\mathbf i\in N^{\omega}$ tale che $x\in\bigcap_{n\geq0}K_{\mathbf i\upharpoonright n}$. 
+	In tale intersezione ci sta anche $\pi(\mathbf i)$ per definizione. 
+	Ricordando però che quella intersezione è un singoletto, deve valere $x = \pi(\mathbf i)$.
+	
+	Verifichiamo (7). Siano $x = \pi(\mathbf i)$ ed $\e>0$. Allora per ogni $n$ si ha $x\in K_{\mathbf i \upharpoonright n}$, ed inoltre esiste $n_{0}$ per cui $K_{\mathbf i \upharpoonright n_{0}}\subseteq B(x,\e)$ (sempre per il fatto che il diametro va a 0). 
+	Ne segue immediatamente che $[\mathbf i\upharpoonright n_{0}]\subseteq \pi^{-1}(B(x,\e))$ che è proprio la definizione di continuità. 
+	Osserviamo che la continuità di $\pi$ è una ulteriore conferma del fatto che $ K$ è compatto, in quanto immagine di $N^{\omega}$ (compatto) tramite $\pi$ (continua).
+	
+	Passando a (4), fisiamo $w$ e osserviamo che per definizione $s_{w} = S_{w}s_{w}$, quindi 
+	$$K\supseteq K_{w}\supseteq K_{ww}\supseteq \dots\quad\text{e}\quad \pi(\bar w) \in \bigcap_{n\geq0}K_{w^{n}},$$
+	ma tale intersezione contiene anche $s_{w}$ in quanto punto fisso. Essendo essa un singoletto, ne segue che $s_{w} = \pi(\bar w)$.
+	Inoltre, per ogni $n$ vale $\pi(\mathbf i) \in K_{\mathbf i\upharpoonright n}\ni s_{i\upharpoonright n}$ per cui al limite $s_{i\upharpoonright n}\xrightarrow{n\to\infty}\pi(\mathbf i).$
+	
+	Ora vediamo (5) verificando i due contenimenti. Il verso $(\supseteq)$ è ovvio perché $K$ essendo compatto è anche chiuso e per il punto $(4)$ tutti i punti fissi ``finiti'' stanno in $K$. L'altro segue sempre da (4) perché ogni $x = \pi(\mathbf i)$ è limite dei vari $s_{\mathbf i\upharpoonright n}$, cioè ogni punto di $K$ è di accumulazione per punti fissi ``finiti''.
+	
+	Per verificare (6), dati $\mathbf i$ e $w$ si ha 
+	\begin{align*}
+		K_{\mathbf i\upharpoonright 0} &\supseteq K_{\mathbf i\upharpoonright 1}\supseteq \dots\xrightarrow{\cap}\{\pi(\mathbf i)\}\\
+		S_{w}K_{\mathbf i\upharpoonright 0} &\supseteq S_{w}K_{\mathbf i\upharpoonright 1}\supseteq \dots\xrightarrow{\cap}S_{w}\{\pi(\mathbf i)\}\\
+	\end{align*}
+	e quest'ultima catena corrisponde esattamente a 
+	$$K_{w\mathbf i\upharpoonright 0} \supseteq K_{w\mathbf i\upharpoonright 1}\supseteq \dots\xrightarrow{\cap}\{\pi(w\mathbf i)\}.$$
+	
+	Vediamo la seconda parte di (8). 
+	Sia $H\in\mathcal K$. Abbiamo allora 
+	\begin{align*}
+		d(\pi(\mathbf i), H_{\mathbf i\upharpoonright n}) &\leq
+		d(\pi(\mathbf i), K_{\mathbf i\upharpoonright n}) + d(K_{\mathbf i\upharpoonright n}, H_{\mathbf i\upharpoonright n})\leq \\ &\leq
+		\text{diam}(K_{\mathbf i\upharpoonright n}) + r^{n}d(K,H) \leq \\ &\leq
+		r^{n}(\text{diam} K + d(K,H)) \xrightarrow[\text{indip. da }\mathbf i]{n\to\infty}0.
+	\end{align*}
+
+	Infine per verificare (8') osserviamo che sicuramente $H\supseteq \Phi(H)\supseteq \Phi^{2}(H)\supseteq\dots$ e l'intersezione è punto fisso per $\Phi$. 
+	Poiché il punto fisso di $\Phi$ è unico, esso deve essere $K$. 
+	Ora, preso $\mathbf i$, vale la catena di implicazioni
+	$$H\supseteq K\implies H_{\mathbf i\upharpoonright 1}\supseteq K_{\mathbf i\upharpoonright 1} \implies \dots.$$
+	Si ha quindi 
+	$$\pi(\mathbf i) = \bigcap_{n\geq1}K_{\mathbf i\upharpoonright n} \subseteq \bigcap_{n\geq1}H_{\mathbf i\upharpoonright n}$$
+	ma quest'ultimo è un singoletto, per cui $\pi(\mathbf i) = \bigcap_{n\geq1}H_{\mathbf i\upharpoonright n}$ come volevamo.
+	
+\end{proof}
+
+
+
+\subsection{Misura di Hausdorff}
+
+\begin{definizione}
+	Fissato $s\geq0$ e $\delta>0$, la famiglia $\{E_{i}\}_{i<\omega}$ è un \emph{$\delta$-ricoprimento} di $A\subseteq\R^{n}$ se 
+	\begin{itemize}
+		\item $A\subseteq\bigcup_{i<\omega}E_{i}$;
+		\item $\text{diam} E_{i}\leq\delta$, $\forall i<\omega$.
+	\end{itemize}
+\end{definizione}
+
+\begin{proposizione}
+	La funzione 
+	$$(H_{\delta}^{s})^{*}(A):=\inf\left\{ \sum_{i<\omega}\alpha_{s}\left(\frac{\text{diam}E_{i}}{2}\right)^{s}:\,\{E_{i}\}_{i<\omega}\text{ è un $\delta$-ricoprimento di }A\right\}$$
+	è una misura esterna.
+\end{proposizione}
+\begin{proof}
+	Che valga $(H_{\delta}^{s})^{*}(\emptyset)=0$ è ovvio. Verifichiamo ora la condizione (2b) della definizione. Osserviamo che se $A\subseteq\bigcup_{i<\omega}B_{i}$, un $\delta$-ricoprimento di $\bigcup_{i<\omega}B_{i}$ è anche un $\delta$-ricoprimento di $A$. Allora vale 
+	$$(H_{\delta}^{s})^{*}(A)\leq\sum_{i<\omega}(H_{\delta}^{s})^{*}(B_{i})$$
+	perché al termine sinistro ``si può solo togliere roba'' (nel caso in cui due o più dei $B_{i}$ si sovrappongano).
+\end{proof}
+
+\begin{osservazione}
+	Se $0<\delta'\leq\delta$, allora $(H_{\delta'}^{s})^{*}(A)\geq (H_{\delta}^{s})^{*}(A)$ per ogni insieme $A$. Infatti con meno ricoprimenti a disposizione l'estremo inferiore che definisce tale misura non può diminuire. Poiché al diminuire di $\delta$ abbiamo una successione crescente, possiamo prenderne il limite per $\delta\to0$ ottenendo la prossima definizione.
+\end{osservazione}
+
+\begin{definizione}
+	La misura
+	$$(\mathcal H^{s})^{*}(A):=\lim_{\delta\to0}(H_{\delta}^{s})^{*}(A) = \inf_{\delta>0}(H_{\delta}^{s})^{*}(A)$$
+	si dice \emph{misura esterna $s$-dimensionale di Hausdorff}. Di conseguenza la sua restrizione alla $\sigma$-algebra $\mathcal F$ degli insiemi misurabili, $\mathcal H^{s}:=(\mathcal H^{s})^{*}\big|_{\mathcal F}$ è detta \emph{misura $s$-dimensionale di Hausdorff}.
+\end{definizione}
+
+\begin{lemma}
+	 Se $\mathcal H^{s}(A)<\infty$ e $t>s$, allora $\mathcal H^{t}(A) = 0$.
+\end{lemma}
+\begin{proof}
+	Sia $\{E_{i}\}_{i<\omega}$ un $\delta$-ricoprimento di $A$. Allora per ogni $i$ vale 
+	$$(\text{diam} E_{i})^{t} = (\text{diam} E_{i})^{t-s}(\text{diam} E_{i})^{s} \leq \delta^{t-s}(\text{diam} E_{i})^{s},$$
+	per cui passando all'estremo inferiore
+	$$\mathcal H_{\delta}^{t}(A) \leq \delta^{t-s}\mathcal H_{\delta}^{s}(A).$$
+	Ora, dato che per ipotesi $\mathcal H^{s}(A)<\infty$, facendo tendere $\delta\to0$ il termine a destra va a zero e quindi si ottiene $\mathcal H^{t}(A) = 0$.
+\end{proof}
+
+\begin{osservazione}
+	Questo lemma ha delle conseguenze interessanti: 
+	\begin{enumerate}
+		\item per la contronominale all'enunciato, $\mathcal H^{t}(A)>0$ e $s<t$ implicano $\mathcal H^{s}(A)=\infty$;
+		\item $\sup\{s:\mathcal H^{s}(A) = +\infty\} = \inf\{t:\mathcal H^{t}(A) = 0\} =:\dim_{H}(A)$ è detta \emph{dimensione di Hausdorff di $A$}.
+	\end{enumerate}
+\end{osservazione}
+
+\begin{definizione}
+	Se $A$ è boreliano, ha dimensione $\dim_{H}(A) = s$ e vale $\mathcal H^{s}(A) \neq 0,\infty$ allora diremo che $A$ è un $s$-insieme.
+\end{definizione}
+
+
+\subsection{Dimensione box}
+
+È possibile considerare una differente costruzione della misura. 
+Supponiamo di considerare, invece di ricoprimenti con diametro $\leq\delta$, solo i ricoprimenti con diametro esattamente $\delta$.
+Allora la misura di Hausdorff si può scrivere come 
+$$\mathcal H^{s}_{\delta}(A) = \inf\{\sum(\text{diam}E_{i})^{s}: \dots\} = \delta^{s}N_{\delta}(A)$$
+dove $N_{\delta}(A)$ è il minimo numero di insiemi di diametro $\delta$ che occorrono per ricoprire $A$. 
+A differenza della costruzione fatta prima non si può scrivere $\lim_{\delta\to 0}\delta^{s}N_{\delta}(A)$ alla buona, perché non è affatto chiaro che $\delta^{s}N_{\delta}(A)$ cresca!
+Ad ogni modo si da la seguente 
+\begin{definizione}
+	Si dice che $A$ ha \emph{dimensione box} $s\geq0$ se il limite
+	$$\lim_{\delta\to 0}\delta^{s}N_{\delta}(A)$$
+	esiste diverso da $0,\infty$.
+\end{definizione}
+Si può esplicitare $s$ in modo da ottenerlo tramite calcolo, se il limite scritto sopra esiste. Infatti passando ai logaritmi, deve valere 
+$$\log N_{\delta}(A) + s\log\delta\to\text{cost},$$
+e dividendo per $-\log \delta$ abbiamo 
+$$\frac{\log N_{\delta}(A)}{-\log\delta}\to s =:\dim_{B}(A).$$
+
+Per ovviare al problema di definizione che si pone quando il limite non esiste, a partire da quanto appena ricavato si definiscono anche altre due quantità. 
+\begin{definizione}
+	Definiamo \emph{dimensione box inferiore} e \emph{superiore di $A$} rispettivamente le due quantità 
+	\begin{align*}
+		\underline{\dim_{B}}(A) &:= \liminf_{\delta\to0}\frac{\log N_{\delta}(A)}{-\log\delta}\\
+		\overline{\dim_{B}}(A) &:= \limsup_{\delta\to0}\frac{\log N_{\delta}(A)}{-\log\delta}
+	\end{align*}
+
+\end{definizione}
+Naturalmente quando esse coincidono sono anche uguali alla dimensione box dell'insieme.
+Nel libro di Falconer si dimostra che è possibile sostituire il numero $N_{\delta}(A)$ indifferentemente con:
+\begin{itemize}
+	\item il numero minimo di insiemi di diametro $\leq\delta$ che occorre per ricoprire $A$;
+	\item il numero minimo di palle chiuse di raggio esattamente $\delta$ che occorre per ricoprire $A$;
+	\item il numero minimo di cubi chiusi di lato esattamente $\delta$ che occorre per ricoprire $A$;
+	\item il numero minimo di cubi di lato esattamente $\delta$ disposti a griglia che occorre per ricoprire $A$;
+	\item il numero \emph{massimo} di palle aperte \emph{disgiunte} di raggio $\delta$ con centro in $A$. 
+\end{itemize}
+
+\subsection{Proprietà di $\dim_{H}$ e $\dim_{B}$}
+
+\begin{enumerate}
+	\item $A\subseteq B\implies \dim_{H}(A)\leq \dim_{H}(B)$.
+	
+	Basta dimostrare che $\forall s,\, \mathcal H^{s}(A) = +\infty \implies \mathcal H^{s}(B) = +\infty$, e questo è ovvio per la definizione di misura (esterna).
+	
+	\item Se $A\subseteq\R^{n}$ e $s>n$ allora $\mathcal H^{s}(A) = 0$ (e quindi $\dim_{H}(A)\leq n$).
+	
+	Infatti senza perdita di generalità possiamo supporre $A\subseteq[0,1]^{n}$ (se così non fosse, basta ricoprire $A$ di cubetti e considerare quelli; la additività della misura fa il resto).
+	In particolare $A$ è copribile con una mesh di lato $\delta$, quindi 
+	$$\mathcal H^{s}(A)\leq \left(\frac{1}{\delta}\right)^{n}\cdot(\text{cost}\cdot\delta)^{s} = \text{cost}^{s}\cdot\delta^{s-n}\xrightarrow{\delta\to0}0.$$
+	
+	\item $\dim_{H}\left(\bigcup_{i<\omega}A_{i}\right) = \sup_{i<\omega}\dim_{H}A_{i}$.
+	
+	Infatti la disuguaglianza $\geq$ è ovvia per il punto 1. 
+	Ora supponiamo per assurdo che valga $>$, per cui esiste un elemento separatore $\dim_{H}\left(\bigcup_{i<\omega}A_{i}\right) > s > \sup_{i<\omega}\dim_{H}A_{i}$. 
+	Per il definizione di dimensione di Hausdorff si ha quindi $\mathcal H^{s}(A_{i}) = 0$ per ogni $i$, da cui per la subaddività della misura segue
+	$$\mathcal H^{s}\left(\bigcup_{i<\omega}A_{i}\right) \leq \sum_{i<\omega}\underbrace{\mathcal H^{s}(A_{i})}_{=0} = 0$$
+	ma allora dovrebbe essere $\dim_{H}\left(\bigcup_{i<\omega}A_{i}\right) = 0$, assurdo.
+	
+	\item In particolare, se $A$ è numerabile la sua dimensione di Hausdorff vale 0.
+	
+	Basta ricoprirlo di singoletti, che hanno ovviamente dimensione di Hausdorff nulla. 
+\end{enumerate}
+
+\begin{definizione}
+	Una funzione $F: \R^{n}\to \R^{n}$ si dice \emph{hölderiana} di costanti $\alpha,r>0$ se 
+	$$\|Fx-Fy\|\leq r\|x-y\|^{\alpha}\quad\forall x,y\in \R^{n}.$$
+\end{definizione}
+
+\begin{definizione}
+	Una funzione $F: \R^{n}\to \R^{n}$ si dice \emph{bilipschitziana} di costante $r>1$ se 
+	$$r^{-1}\|x-y\|\leq\|Fx-Fy\|\leq r\|x-y\|\quad \forall x,y\in\R^{n}.$$
+\end{definizione}
+
+\begin{proposizione}
+\begin{itemize}
+	\item[a)] Sia $F$ $\alpha$-Hölderiana con $\alpha,r>0$. Allora
+	\begin{enumerate}
+		\item $\forall s$, $\mathcal H^{s/\alpha}(FA)\leq r^{s/\alpha}\mathcal H^{s}(A)$;
+		\item $\dim_{H}(FA) \leq \alpha^{-1}\dim_{H}(A)$
+	\end{enumerate}
+	\item[b)] Se $F$ è bilipschitziana allora $\dim_{H}(FA) = \dim_{H}(A)$.
+	\item[c)] Ogni $F$ lipschitziana non fa crescere $\underline{\dim_{B}}$ e $\overline{\dim_{B}}$. Se è bilipschitziana allora le lascia invariate. 
+\end{itemize}
+\end{proposizione}
+\begin{proof}
+	Dimostriamo per prima (a.1). Sia $\{E_{i}\}$ un $\delta$-ricoprimento di $A$. 
+	Si ha quindi $A = \bigcup_{i}(A\cap E_{i})$, per cui dato che $F$ distribuisce sulle unioni si ottiene $FA = \bigcup_{i}F[A\cap E_{i}]$. 
+	Ora osserviamo che per ogni $i$ vale, per $\alpha$-Hölderianità, 
+	$$\diam(F[A\cap E_{i}]) \leq r [\diam(A\cap E_{i})]^{\alpha} \overset{(*)}{\leq} r (\diam E_{i})^{\alpha} \leq r\delta^{\alpha}.$$
+	Da ciò si ottengono due cose: 
+	\begin{itemize}
+		\item $\{F[A\cap E_{i}]\}$ è un $r\delta^{\alpha}$-ricoprimento di $FA$; 
+		\item $[\diam(F[A\cap E_{i}])]^{s/\alpha}\overset{(*)}{\leq} r^{s/\alpha}[\diam E_{i}]^{s}$.
+	\end{itemize}
+	Quindi abbiamo ricoperto $A$ e $FA$ con lo stesso numero di insiemi, opportunamente riscalati. 
+	Pertanto otteniamo che 
+	$$\mathcal H^{s/\alpha}_{r\delta^{\alpha}}(FA) \leq r^{s/\alpha} \mathcal H^{s}_{\delta}(A).$$
+	Poiché il ricoprimento $\{E_{i}\}$ di partenza è arbitrario, per $\delta\to0$ si ha la tesi.
+	
+	Per dimostrare (a.2) basta vedere che $s>\alpha^{-1}\dim_{H}(A)\implies\mathcal H^{s}(FA) = 0$, e questo viene dal punto precedente. Infatti da 
+	$$\forall\tilde s,\quad \mathcal H^{\tilde s/\alpha}(FA) \leq r^{\tilde s/\alpha} \mathcal H^{\tilde s}(A)$$
+	ponendo $\tilde s = \alpha s$ otteniamo 
+	$$\mathcal H^{s}(FA) \leq r^{s}\mathcal H^{s\alpha}(A).$$
+	Per ipotesi abbiamo $\alpha s<\dim_{H}(A)$, per cui $\mathcal H^{s\alpha}(A) = 0$ e di conseguenza anche il membro sinistro della disuguaglianza deve essere nullo come volevamo dimostrare. 
+	
+	Per dimostrare (b) si applica (a.2), forti del fatto che $F$ è iniettiva (viene dalla bilipschitzianità) e quindi esiste $F^{-1}$: 
+	$$\dim_{H}A \leq \dim_{H}F^{-1}FA \leq \dim_{H}FA \leq \dim_{H}A$$
+	per cui essendo il primo e l'ultimo termine uguali, valgono tutte come uguaglianze. 
+	
+	Infine dimostriamo (c) riprendendo il ragionamento di (a). In questo caso $\alpha = 1$, per cui se abbiamo un $\delta$-ricoprimento di $A$ dato da $\{E_{i}\}$, si ha che $\{F[A\cap E_{i}]\}$ è un $r\delta$-ricoprimento di $FA$, per cui per ogni $\delta>0$ si ha $N_{r\delta}(FA)\leq N_{\delta}(A)$. 
+	Passando i logaritmi e dividendo per $-\log\delta = -\log(r\delta) + \log r$, si ottiene (per $\delta<1$, ma dovendo fare il limite questa condizione è soddisfatta definitivamente)
+	$$\frac{\log(N_{r\delta}(FA))}{-\log(r\delta) + \log r}\leq \frac{\log(N_{\delta}(A))}{-\log\delta}$$
+	e questa disuguaglianza vale passando al $\liminf$ e al $\limsup$ per $\delta\to0$, per cui dato che il $\log r$ viene mangiato dagli altri termini si ottengono 
+	$$\underline{\dim_{B}}(FA)\leq\underline{\dim_{B}}(A),\quad \overline{\dim_{B}}(FA)\leq\overline{\dim_{B}}(A).$$
+\end{proof}
+
+Ulteriori conseguenze: 
+\begin{itemize}
+	\item Ogni affinità non singolare di $\R^{n}$, essendo bilipschitziana, conserva $\dim_{H}$ e $\dim_{B}$.
+	\item Se $\mathcal C$ è una varietà liscia di dimensione $m$ immersa in $\R^{n}$ tramite $F$, allora essendo $F$ bilipschitziana vale $\dim_{H}\mathcal C = m$.
+	\item Se $F:\R^{n}\to\R^{m}$ è un'affinità (eventualmente singolare, come può essere una proiezione) allora essa è lipschitziana e quindi $\dim_{H}(FA)\leq \min\{\dim_{H}(A), m\}$.
+\end{itemize}
+
+C'è un aspetto \emph{apparentemente} gradevole di $\dim_{B}$: per ogni $A\subseteq \R^{n}$ limitato, si hanno 
+$$\underline{\dim_{B}} A = \underline{\dim_{B}}A^{f},\quad \overline{\dim_{B}} A = \overline{\dim_{B}}A^{f},$$
+dove al solito $^{f}$ indica la chiusura topologica di un insieme. 
+Questo significa che se consideriamo l'insieme $[0,1]^{2}\cap\mathbb{Q}^{2}$, questo ha dimensione di Hausdorff nulla in quanto è numerabile, ma d'altro canto ha la stessa dimensione box della sua chiusura, cioè 2!
+\begin{proof}[Dimostrazione (dimensione box e chiusura)]
+	Ricordiamo che per definizione 
+	$$\underline{\dim_{B}}(A) = \liminf_{\delta\to0}\frac{\log N_{\delta}(A)}{-\log\delta},$$
+	dove in questo caso nel calcolo di $N_{\delta}(A)$ scegliamo di utilizzare palle chiuse di raggio esattamente $\delta$. 
+	Poiché $[0,1]^{2}\times\mathbb{Q}^{2}$ è denso in $[0,1]^{2}$, coprire il primo è esattamente come coprire il secondo, per qualunque scelta di $\delta>0$. Pertanto facendo il limite si ottiene lo stesso numero considerando $N_{\delta}(A)$ o $N_{\delta}(A^{f})$.
+	Analogamente si dimostra l'asserzione riguardo alla dimensione box superiore. 
+\end{proof}
+
+\subsection{Tecniche per calcolare $\dim_{H}A$}
+
+Solitamente, a meno che non si sia in un caso fortunato, è difficile calcolare la dimensione di Hausdorff di un oggetto. Quello che si cerca di fare è dare delle stime superiori e inferiori a tale quantità. Presentiamo ora qualche risultato che ci aiuta in questa operazione. 
+
+\begin{lemma}
+	Vale $\dim_{H}A \leq \underline{\dim_{B}}A \leq \overline{\dim_{B}}A$.
+\end{lemma}
+\begin{proof}
+	La seconda disuguaglianza è ovvia. 
+	Per la prima, osserviamo preliminarmente che per $\dim_{H}A = 0$ è ovvia. 
+	Possiamo quindi supporre che esista $s>0$ per cui $\mathcal H^{s}(A) = +\infty$. 
+	Allora per $\delta>0$ abbastanza piccolo (in particolare minore di 1), abbiamo 
+	$$1<\mathcal H^{s}_{\delta}(A) \leq N_{\delta}(A) \delta^{s}$$
+	di cui è importante la disuguaglianza a destra, che segue dal fatto che gli insiemi usati per calcolare $\mathcal H^{s}_{\delta}(A)$ sono stati tutti ``gonfiati'' fino a raggiungere il loro massimo diametro $\delta$.
+	Passando ai logaritmi otteniamo quindi 
+	$$0 < \log N_{\delta}(A) + s\log\delta,$$
+	da cui 
+	$$s < \frac{\log N_{\delta}(A)}{-\log\delta}$$
+	per cui passando al $\liminf_{\delta\to0}$, per la permanenza del segno vale $s\leq \underline{\dim_{B}}A$.
+	Infine, essendo $s$ arbitrario possiamo passare al $\sup_{s}$, ottenendo 
+	$$\dim_{H}A \leq \underline{\dim_{B}}A.$$
+\end{proof}
+
+\begin{definizione}
+	Diremo che un insieme $A$ è \emph{totalmente sconnesso} se per ogni $x,y\in A$ esiste un clopen di $A$ che li separa. 
+\end{definizione}
+
+\begin{lemma}
+	Se $\dim_{H}A < 1$ allora $A$ è totalmente sconnesso. 
+\end{lemma}
+\begin{proof}
+	Prima di dimostrare il lemma vero e proprio, facciamo un'osservazione. 
+	Fissato $x_{0}\in\R^{n}$, la funzione $F(x) := \|x-x_{0}\|$ è lipschitziana di costante 1 grazie alla disuguaglianza triangolare: 
+	$$|\|x-x_{0}\| - \|y-y_{0}\||\leq \|x-y\|\implies |Fx-Fy|\leq\|x-y\|.$$
+	
+	Ora consideriamo due generici $x_{0}$ e $x_{1}$ punti distinti di $A$ e la $F$ appena definita. Abbiamo che $x_{0}\mapsto 0$ e $x_{1}\mapsto d>0$. 
+	Da quanto visto in precedenza sul legame tra dimensione di Hausdorff e funzioni lipschitziane, la dimensione dell'immagine non può crescere, per cui vale ancora $\dim_{H}F[A] < 1$. 
+	Quindi $F[A]$ non può contenere alcun intervallo, perché in quel caso la dimensione dovrebbe essere almeno 1 per la proprietà 1 di $\dim_{H}$. 
+	In particolare non può contenere l'intervallo $[0,d]$, per cui esiste un certo $0<r<d$ che non sta in $F[A]$. 
+	Se consideriamo quindi la palla $B(x_{0},r)$, essa non ha punti di $A$ sul bordo. 
+	Per questo motivo se la intersechiamo con $A$ otteniamo un clopen di $A$ che contiene $x_{0}$ e il cui complementare contiene $x_{1}$, per cui abbiamo effettivamente separato $x_{0}$ e $x_{1}$. $A$ è quindi totalmente sconnesso.
+\end{proof}
+
+\begin{teorema}
+	Sia $A\subseteq\R^{n}$ limitato. Supponiamo di avere, per ogni $n\geq0$, un ricoprimento di $A$ con $N(n)$ insiemi di diametro al più $\delta(n)$. Assumiamo inoltre che $\delta(n)\xrightarrow{n\to+\infty}0$ non superesponenzialmente, ossia $\exists c\in(0,1)$ t.c. $\delta(n+1)\geq c\cdot\delta(n)\,\forall n\geq0$.
+	Allora:
+	\begin{enumerate}
+		\item $$\underline{\dim_{B}}A \leq \liminf_{n\to\infty} \frac{\log N(n)}{-\log \delta(n)};$$
+		\item $$\overline{\dim_{B}}A \leq \limsup_{n\to\infty} \frac{\log N(n)}{-\log \delta(n)};$$
+		\item se per un fissato $s\in\R_{\geq0}$ l'insieme $\{N(n)\cdot \delta(n)^{s}\}_{n}$ è limitato, allora $\mathcal H^{s}(A) < \infty$ (e dunque $\dim_{H}A\leq s$).
+	\end{enumerate}
+\end{teorema}
+
+Prima di dare la dimostrazione applichiamo il teorema con qualche esempio familiare. 
+\begin{esempio}
+	\begin{itemize}
+		\item \textbf{Insieme di Cantor standard.} In questo caso possiamo, pensando al primo passo della costruzione, dedurre che vanno bene $N(n) = 2^{n}$ e $\delta(n) = (1/3)^{n}$. Otteniamo quindi 
+		$$\frac{\log 2^{n}}{-\log(1/3)^{n}} = \frac{\log 2}{\log 3}.$$ 
+		\item \textbf{Triangolo di Sierpinski.} Se consideriamo la costruzione classica fatta nel quadrato unitario, con $N(n) = 3^{n}$, $\delta(n) = \sqrt 2(1/2)^{n}$ otteniamo facilmente la stima $\log3/\log2$.
+		\item \textbf{Curva di Koch.} In questo caso delle buone scelte sono $N(n) = 4^{n}$ e $\delta(n) = (1/3)^{n}$, per cui la stima che si ottiene è $\log4/\log3$.
+	\end{itemize}
+\end{esempio}
+
+\begin{proof}
+	Sia $\delta>0$ arbitrario, scelto in modo che $\delta(n+1)\leq\delta\leq\delta(n)$. 
+	Allora per la monotonia del logaritmo, e dall'ipotesi sulla crescita di $\delta(n)$, vale 
+	$$\frac{\log N_{\delta}(A)}{-\log\delta} \leq \frac{\log N_{\delta(n+1)}(A)}{-\log\delta(n)} \leq \frac{\log N_{\delta(n+1)}(A)}{-\log\delta(n+1) + \log c}.$$
+	Di conseguenza vale, dato che al limite $\log c$ non influisce essendo costante, 
+	$$\limsup_{\delta\to0}\frac{\log N_{\delta}(A)}{-\log\delta} \leq \limsup_{n\to\infty}\frac{\log N_{\delta(n+1)}(A)}{-\log\delta(n+1)}.$$
+	Poiché l'insieme $\{\delta(n)\}_{n}$ su cui facciamo il limite a destra è contenuto in quello dei $\delta$ di sinistra, vale anche la disuguaglianza opposta e di conseguenza l'uguaglianza. 
+	Pertanto nel calcolo di $\overline{\dim_{B}}$ si possono utilizzare le successioni $\delta(n)$.
+	Si dimostra analogamente questo fatto anche per $\liminf$ e $\underline{\dim_{B}}$.
+	
+	Applicando quanto appena dimostrato vale quindi 
+	$$\overline{\dim_{B}}A = \limsup_{n\to\infty}\frac{\log N_{\delta(n)}(A)}{-\log\delta(n)} \leq \limsup_{n\to\infty}\frac{\log N(n)}{-\log\delta(n)}$$
+	dove la disuguaglianza vale perché a sinistra consideriamo la cardinalità del $\delta(n)$-ricoprimento minimo di $A$, mentre a destra è la cardinalità di un $\delta(n)$-ricoprimento arbitrario.
+	Abbiamo quindi dimostrato il punto 2. Analogamente si dimostra il punto 1. 
+	
+	Vediamo l'affermazione 3. 
+	Supponiamo quindi che per ogni $n$ valga $N(n)\delta(n)^{s} \leq M < \infty$ per un certo $M$.
+	Allora per definizione vale anche $\mathcal H_{\delta(n)}^{s}(A) \leq M$. Per $n\to\infty$ si ottiene che $\mathcal H^{s}(A)\leq M$, per cui abbiamo concluso. 	
+\end{proof}
+
+\begin{proposizione}[principio della poca massa]
+	Sia $\mu$ una misura finita su $\R^{n}$ con $\text{supp}(\mu)\subseteq A$. 
+	Sia $s>0$ per cui $\exists c,\delta > 0$ t.c. $\forall E$ con $\diam E\leq \delta$ si ha $\mu(E)\leq c(\diam E)^{s}$. 
+	Allora $\mathcal H^{s}(A) \geq c^{-1}\mu(A)$ (in particolare è $>0$, per cui $\dim_{H}A\geq s$).
+\end{proposizione}
+\begin{proof}
+	Sia $\{E_{i}\}_{i<\omega}$ un $\delta$-ricoprimento di $A$. 
+	Allora per definizione di misura e per ipotesi, 
+	$$0<\mu(A)\leq \sum_{i<\omega}\mu (E_{i}) \leq c\cdot\sum_{i<\omega}(\diam E_{i})^{s}.$$
+	Dunque prendendo l'estremo inferiore sui vari $\delta$-ricoprimenti di $A$, si ottiene 
+	$$\mu(A) \leq c\mathcal H^{s}_{\delta}(A)$$
+	per cui per $\delta\to0$ si ha la tesi.
+\end{proof}
+
+\begin{esempio}
+	Consideriamo l'insieme di Cantor standard, denotandolo con $K$. Il modo intuitivo per metterci una misura è quello di considerare lo spazio $(2^{\omega}, P_{(1/2,1/2)})$ e utilizzare la applicazione di proiezione $\pi:2^{\omega}\to K$, definendo la misura pushforward su $K$: $\mu = \pi_{*}P$.
+	Consideriamo dunque $s = \log2/\log3$, $\delta = 1$, $c = 2$, e come insieme tipico di un ricoprimento di $K$ consideriamo senza perdita di generalità un intervallo $E$.
+	Quale che sia la sua lunghezza, esiste certamente un $n\geq0$ per cui $(1/3)^{n+1}\leq \diam E < (1/3)^{n}$.
+	Allora segue che 
+	$$\mu(E) \leq \left(\frac{1}{2}\right)^{n} = \left(\frac{1}{3}\right)^{sn} = 3^{s}\left(\frac{1}{3}\right)^{s(n+1)} \leq 2(\diam E)^{s}.$$
+	Quindi $\dim_{H}A\geq s = \log2/\log3$, per cui unito al risultato ottenuto prima questo ci dice che tale numero è esattamente la dimensione di Hausdorff dell'insieme di Cantor standard.
+\end{esempio}
+
+\begin{esercizio}
+	Considerato l'IFS definito dalle due trasformazioni
+	$$Q_{0}: \left(\begin{array}{ccc}r & 0 & 0 \\0 & p & 0 \\0 & 0 & 1\end{array}\right),\quad
+	Q_{1}:\left(\begin{array}{ccc}1-r & 0 & r \\0 & 1-p & p \\0 & 0 & 1\end{array}\right)$$
+	trovare l'attrattore (numericamente) e stimarne la dimensione di Hausdorff.
+	Dimostrare che è un omeomorfismo, che è derivabile $\lambda$-q.o. (suggerimento: teorema di Lebesgue), e che dove la derivata esiste questa è nulla (giustificando la classificazione dell'attrattore come \emph{scala del diavolo}).
+\end{esercizio}
+
+\begin{proof}[Soluzione]
+	Consideriamo lo spazio $(2^{\omega}, P_{(r,1-r)})$ e la mappa $\pi:2^{\omega}\to K$ dove $K$ è l'attrattore ``orizzontale'', e la misura push-forward $\mu = \pi_{*}P$.
+	L'attrattore dell'IFS grande è la funzione di ripartizione $M$. 
+	Essa è continua in quanto per ogni $\mathbf i$ vale $\mu(\{\pi(\mathbf i)\}) = 0$ perché il termine di sinistra non è altro che $P(\pi^{-1}\{x\})$ e l'insieme all'interno è composto al più di due punti.
+	Inoltre è iniettiva perché dati $x<x'$ si può sempre trovare una parola $w$ tale che $S_{w}[0,1]\subset[x,x']$ e la massa contenuta in tale intervallo è $(1/2)^{\#w}$, per cui $M(x)<M(x')$.
+	
+	Da queste due proprietà segue per il Teorema di Lebesgue che la funzione $M$ è derivabile $\lambda$-q.o.
+	Ciò che rimane da dimostrare è contenuto nel seguente teorema.
+\end{proof}
+
+\begin{teorema}
+	Se $r\neq1/2$ allora $M$ è differenziabile $\lambda$-q.o. e la derivata vale 0. 
+\end{teorema}
+\begin{osservazione}
+	Questo qualifica la funzione $M$ come scala del diavolo \emph{scivolosa}, in contrapposizione con scale del diavolo non scivolose in cui i gradini sono effettivamente orizzontali.
+\end{osservazione}
+\begin{osservazione}
+	Se consideriamo il processo stocastico i.i.d. $X = (X_{n},\,n\geq0)$ con $X_{n}:(2^{\omega}, P_{(r,1-r)})\to\{0,1\}$ che indica il valore della $n$-esima lettera di una parola infinita $\mathbf i$ e applichiamo la legge forte dei grandi numeri, otteniamo che 
+	$$\frac{\#\{\text{1 che compaiono fino al livello $n$}\}}{n} \xrightarrow{\text{q.o.}} 1-r.$$
+\end{osservazione}
+\begin{proof}
+	Abbiamo osservato che $\pi_{*}P_{1/2} = \lambda$, dunque poichè un tipico elemento $x = \pi(\mathbf i)$ è incapsulato in un rettangolo centrato in $(x, M(x))$ con base $b(n) = S_{\mathbf i\upharpoonright n}([0,1])$ e altezza $a(n) = T_{\mathbf i\upharpoonright n}([0,1])$, per l'osservazione precedente abbiamo per la derivata 
+	$$M'(x) = \lim_{n\to\infty}\frac{a(n)}{b(n)} = \lim_{n\to\infty}\frac{(1/2)^{n}}{r^{nr}(1-r)^{n(1-r)}} = 
+	\lim_{n\to\infty}\left(\frac{1}{2r^{r}(1-r)^{1-r}}\right)^{n}.$$
+	A questo punto il comportamento del limite dipende dal confronto tra la quantità tra parentesi e 1. 
+	Introduciamo il risultato che ci permette di concludere la dimostrazione.
+\end{proof}
+
+\begin{teorema}
+	Sia $h:\Delta = \{(x_{0},\dots,x_{N-1})\text{ vettori di prob.}\}\to\R_{\geq0}$ definita da 
+	$$h(\mathbf x) = x_{0}(-\log x_{0}) + \dots + x_{N-1}(-\log x_{N-1}).$$
+	Essa è anche nota come entropia metrica dello shift pieno su $N$ simboli rispetto alla metrica prodotto $P_{\mathbf x}$.
+	Allora $h$ ha uno ed un solo massimo in $(1/N,\dots,1/N)$ e tale massimo è $\log N$.
+\end{teorema}
+\begin{proof}
+	L'abbiamo vista numericamente per vettori 3-dimensionali. Si calcola il massimo usando tecniche di Analisi II (jacobiano, hessiano). Attenzione, bisogna sfruttare il fatto che si tratta di un vettore di probabilità: $x_{N-1} = -(x_{0}+\dots + x_{N-2})$, per cui in realtà $h$ dipende solo dai primi $N-1$ valori di $\mathbf x$.
+\end{proof}
+
+\begin{proof}[Fine dimostrazione del teorema]
+	Per $N=2$ abbiamo il caso che ci serve, infatti si ottiene 
+	$$r(-\log r) + (1-r)(-\log (1-r)) \leq \log2$$
+	cioè 
+	$$r\log r + (1-r)\log(1-r)\geq\log\frac{1}{2}$$
+	con minimo in $r = 1/2$, per cui applicando $\exp$ si trova
+	$$r^{r}(1-r)^{1-r}\geq\frac{1}{2}.$$
+	Per cui in conclusione se $r\neq1/2$, la quantità nel limite è più piccola di 1 quindi $M'(x) = 0$.
+\end{proof}
+
+
+\subsection{Misure stazionarie}
+
+Sia $H\subseteq\R^{n}$ compatto. Indichiamo $\mathcal M(H)$ l'insieme delle misure finite boreliane su $H$ e $\mathcal P(H)$ l'insieme delle probabilità boreliane su $H$. 
+Entrambi questi insiemi sono dotati della topologia debole data considerando l'inclusione $\mathcal M(H) \hookrightarrow \R^{\mathcal C(H)}$ che manda $\mu \mapsto \int_{H}fd\mu$. Infatti 
+$$\mu_{n}\to\mu\quad\iff\quad \forall f\in\mathcal C(H),\; \int_{H}fd\mu_{n}\to\int_{H}fd\mu.$$
+Sia ora $\mathcal S = \{S_{0},\dots,S_{N-1}\}$. Abbiamo visto l'operatore di Hutchinson $\Phi:\mathcal K(H)\to\mathcal K(H)$. Consideriamo ora anche, per $\mathbf p\in \Delta$, $\mathbf p = (p_{0},\dots,p_{N-1})$, l'operatore su $\mathcal M(H)$ (che chiameremo sempre operatore di Hutchinson) dato da 
+$$\Phi_{\mathbf p}(\nu) = \sum_{i = 0}^{N-1} p_{i}(S_{i})_{*}(\nu).$$
+
+\begin{esercizio}
+	Sia $S_{*}$ che $\Phi_{\mathbf p}$ distribuiscono sulle somme positive e sui prodotti per scalari positivi. 
+\end{esercizio}
+Quindi applicando l'operatore ad una probabilità, per come abbiamo scelto i pesi $p_{i}$ il risultato è sempre una probabilità. I punti fissi per $\Phi_{\mathbf p}$ vengono detti \emph{probabilità stazionarie}.
+
+\begin{definizione}
+	La \emph{distanza di 1-Wasserstein} su $\mathcal P(H)$ è 
+	$$W(\mu,\nu) = \sup\left\{\int_{H}fd\mu - \int_{H}fd\nu:\,f:H\to\R\text{ 1-Lipschitz}\right\}.$$
+\end{definizione}
+
+\begin{teorema}
+	La distanza $W$ metrizza la topologia debole. 
+\end{teorema}
+
+Una definizione alternativa della distanza di 1-Wasserstein è dovuta a Kontorovich, ed è 
+$$W(\mu,\nu) = \inf\left\{\int_{H^{2}}\|x-y\|d\rho(x,y):\; \rho\text{ è un accoppiamento tra $\mu$ e $\nu$}\right\},$$
+dove si intende dire che $\mu$ e $\nu$ sono i marginali di $\rho$. 
+Questa definizione è interessante anche perché si lega ad un problema concreto, quello del trasporto ottimo in cui il costo per il trasporto è pari alla distanza tra i due punti da congiungere.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

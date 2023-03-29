@@ -1,0 +1,478 @@
+%!TEX root = ../matcomp.tex
+%!TEX encoding = UTF-8 Unicode
+
+Vediamo alcune proprietà della distanza di 1-Wasserstein. Per prima cosa controlliamo che sia una vera distanza. 
+L'unica condizione non banale da verificare è la disuguaglianza triangolare. 
+Fissiamo quindi una $f$ che sia 1-Lipschitz e osserviamo che per $\mu,\nu,\xi\in\mathcal P(H)$ vale
+$$|\mu(f) - \nu(f)|\leq |\mu(f) - \xi(f)| + |\xi(f) - \nu(f)| \leq W(\mu,\xi) + W(\xi,\nu)$$
+per cui passando all'estremo superiore sulle varie $f$ si ottiene proprio quanto cercato. 
+
+Un'altra proprietà è il fatto che poiché $H$ è compatto, vale $H\subseteq B(a,R)$ per opportuni $a\in\R^{n}$ e $R>0$, e quindi la distanza $W$ è limitata. Infatti prese $\mu,\nu\in\mathcal P(H)$ abbiamo 
+$$\mu(f) - \nu(f) = \mu(f-f(a) + f(a)) - \nu(f - f(a) + f(a)) = \mu(f - f(a)) + f(a) - \nu(f-f(a)) - f(a) \leq 2R$$
+dove l'ultima disuguaglianza si ottiene dato che $f$ è 1-Lipschitz e quindi $|f(x)-f(a)|\leq |x-a| \leq R$ per ogni $x$, e possiamo omettere il valore assoluto senza perdita di generalità.
+
+Infine vediamo cosa succede calcolando la distanza $W$ tra due misure degeneri, diciamo in $a$ e in $b$. Abbiamo, sempre grazie alla 1-lipschitzianità, che 
+$$W(\delta_{a},\delta_{b}) = \sup\{|f(a) - f(b)|:\text{ $f$ è 1-Lips.}\}\leq \|a-b\|.$$
+
+\begin{teorema}
+	Dato un IFS $S = \{S_{0},\dots,S_{N-1}\}$ con $S_{i}:H\to H$ per ogni $i$ di costanti $0<r_{1},\dots,r_{N-1}<1$ e fissato $\mathbf p = (p_{0},\dots,p_{N-1})$ vettore di probabilità abbiamo l'operatore di Hutchinson (per probabilità) $\Phi: \mathcal P(H)\to\mathcal P(H)$ definito da 
+	$$\Phi(\mu) := \sum_{i = 0}^{N-1} p_{i}(S_{i})_{*}(\mu).$$
+	Allora $\Phi$ è una contrazione stretta rispetto alla metrica $W$. 
+	Quindi esiste unico il punto fisso $\mu$ e per ogni $\nu\in\mathcal P(H)$, vale $\Phi^{n}(\nu)\xrightarrow[\text{in $W$}]{n\to\infty}\mu$.
+	In altre parole, se $f$ è continua su $H$ abbiamo 
+	$$\int_{H} fd\mu \xleftarrow{n\to\infty} \int_{H} fd(\Phi^{n}\nu) = \int_{H} fd\left(\sum_{|w|=n}p_{w}\cdot(S_{w})_{*}(\nu)\right) = \sum_{|w| = n} p_{w}\cdot \nu(f\circ S_{w}).$$ 
+	Tale unico punto fisso è proprio $\pi_{*}(P_{\mathbf p})$, e inoltre se $K$ è l'attrattore dell'IFS vale $\text{supp}(\mu)= K$.
+\end{teorema}
+
+\begin{proof}
+	Sia $r = \max\{r_{1},\dots,r_{N-1}\} <1$. Fissiamo una $f$ 1-lipschitziana e consideriamo $\mu,\nu\in\mathcal P(H)$. Allora 
+	\begin{align*}
+		\left|\int f d(\Phi\mu) - \int f d(\Phi\nu)\right| &= 
+		\left|\sum p_{i}\mu(f\circ S_{i}) - \sum p_{i} \nu(f\circ S_{i})\right| = \\ &=
+		\left|\sum p_{i}r[\mu(r^{-1}f\circ S_{i}) - \nu(r^{-1}f\circ S_{i})]\right| \overset{(*)}{\leq} \\ &\leq
+		\underbrace{\sum p_{i}}_{=1}r W(\mu,\nu) = rW(\mu,\nu) 
+	\end{align*}
+	dove il passaggio $(*)$ segue dal fatto che $r^{-1}f\circ S_{i}$ è 1-lipschitziana. Infatti presi $x$ e $y$ qualsiasi vale, dato che $f$ è 1-lipschitziana, 
+	$$|r^{-1}f(S_{i}(x)) - r^{-1}f(S_{i}(y))|\leq r^{-1}\|S_{i}(x) - S_{i}(y)\| = r^{-1}r_{i}\|x-y\| \leq \|x-y\|.$$
+	Passando quindi all'estremo superiore sulle $f$ 1-lipschitziane nella disuguaglianza trovata, otteniamo 
+	$$W(\Phi\mu,\Phi\nu)\leq r W(\mu,\nu),\quad 0<r<1,$$
+	che dimostra che $\Phi$ è una contrazione stretta di costante $r$ rispetto a $W$. 
+	
+	Quindi sappiamo per il teorema sulle contrazioni strette che esiste un unico punto fisso $\mu$ per $\Phi$. Per verificare che $\mu = \pi_{*}(P_{\mathbf p})$ basta quindi verificare che $\pi_{*}(P)$ (d'ora in poi ometteremo il pedice) è punto fisso per $\Phi$. 
+	Osserviamo che, se $\sigma_{i}:N^{\omega}\to [i]\subseteq N^{\omega}$ è l'operatore di shift, ossia $\sigma_{i}(\mathbf j) = i\mathbf j$, abbiamo che 
+	$$P \overset{+}{=} \sum_{i}p_{i}(\sigma_{i})_{*}P.$$
+	Infatti per vederlo possiamo senza perdita di generalità considerare un blocco iniziale $A = [w]$ (generano tutta la $\sigma$-algebra!) e per esso vale 
+	$$\sum_{i} p_{i}P(\sigma_{i}^{-1}[A]) = \sum_{i}p_{i}P(A|[i]) = P(A)$$
+	dove la seconda uguaglianza è contenuta nel teorema di Bayes e la prima segue dal fatto che ora dimostriamo che 
+	$$P(\sigma_{i}^{-1}[w]) = P([w]|[i]).$$
+	Si hanno due casi:
+	\begin{enumerate}
+		\item la prima lettera in $w$ non è $i$. Allora $\sigma_{i}^{-1} = \emptyset$, per cui la misura a sinistra è 0. D'altro canto anche $[w]\cap[i] = \emptyset$, per cui per definizione di probabilità condizionata anche la misura a destra è 0;
+		\item $w = iu$ per un'altra parola $u$. Abbiamo allora 
+		\begin{align*}
+			& P(\sigma_{i}^{-1}[w]) = P([u])\\
+			& P([w]|[i]) = \frac{P([iu]\cap [i])}{P([i])} = \frac{P([i])P([u])}{P([i])} = P([u])
+		\end{align*}
+		dove abbiamo usato il fatto che $P$ è una misura prodotto, per cui $P([iu]) = P([i])P([u])$.
+	\end{enumerate}
+	Ora abbiamo che il diagramma
+	$$\begin{tikzcd}
+		N^\omega \arrow[r, "\sigma_i"] \arrow[d, "\pi"] & N^\omega \arrow[d, "\pi"] \\
+		K \arrow[r, "S_i"]                              & K                        
+	\end{tikzcd}$$
+	commuta perché dal teorema fondamentale degli IFS, preso $\mathbf j \in N^{\omega}$ si ha che $S_{i}(\pi(\mathbf j)) = \pi(i\mathbf j).$
+	Allora
+	\begin{align*}
+		\Phi(\pi_{*}P) &=  
+		\sum_{i}p_{i}(S_{i})_{*}(\pi_{*}P) = 
+		\sum_{i}p_{i}(S_{i}\circ \pi)_{*}P =
+		\sum_{i}p_{i}(\pi\circ \sigma_{i})_{*}P = \\ &=
+		\sum_{i}p_{i} \pi_{*}(\sigma_{i*}P) = 
+		\pi_{*}\left(\sum_{i}p_{i}\sigma_{i*}P\right) \overset{+}{=} \pi_{*}P.
+	\end{align*}
+	
+	Resta da vedere che $\text{supp}(\mu)= K$.
+	L'inclusione $(\subseteq)$ è ovvia perché $\text{supp}(\mu) = \text{supp}(\pi_{*}P) \subseteq \pi(N^{\omega}) = K$, quindi verifichiamo il viceversa. Sia $x\in K$ e fissiamo $\e>0$ arbitrario. Abbiamo dimostrato, quando abbiamo visto che $\pi$ è continua, che $\pi^{-1}(B(x,\e))$ contiene un cilindro, diciamo $[w]$. Questo implica che $x\in \text{supp}(\mu)$.
+	
+\end{proof}
+
+
+\subsection{Dimensione di similitudine}
+
+Consideriamo l'insieme di mappe $S$ con le loro costanti $r_{i}$ definito prima.
+D'ora in poi sia $D$ la soluzione (unica!) di $\sum r_{i}^{D} = 1$ e poniamo $p_{i} = r_{i}^{D}$. Così facendo possiamo definire un vettore di probabilità $\mathbf p = (p_{0},\dots,p_{N-1})$.
+\begin{osservazione}
+	Per ogni $n\geq0$ si ha che $\sum_{|w| = n}r_{w}^{D} = \sum_{|w| = n}p_{w} = 1$ in quanto $p_{w} = P([w])$.
+\end{osservazione}
+
+\begin{proposizione}
+	\begin{enumerate}
+		\item $\mathcal H^{D}(K) < \infty$, quindi $\dim_{H}K = s\leq D$;
+		\item Se le $S_{i}$ sono \textbf{similitudini} e inoltre $K$ è un $s$-insieme allora 
+		$$s = D\iff \forall i\neq j,\; \mathcal H^{s}(K_{i}\cap K_{j})=0.$$
+	\end{enumerate}
+\end{proposizione}
+\begin{proof}
+	$(1)$ Osserviamo che per ogni $n\geq0$ l'unione dei vari $K_{w}$ con $|w| = n$ copre $K$, e inoltre sempre per ogni $n$ vale
+	\begin{align*}
+		\sum_{|w| = n}(\diam K_{w})^{D} \leq
+		\sum_{|w| = n}(r_{w}\diam K)^{D} = 
+		(\diam K)^{D}\sum_{|w| = n}r_{w}^{D} = (\diam K)^{D}.
+	\end{align*}
+	Per $n\to\infty$ si ha $\diam K_{w}\to0$, quindi aspettando abbastanza a lungo otteniamo un ricoprimento di $K$ fine a piacere, per cui $\mathcal H^{D}(K)\leq (\diam K)^{D} <\infty$.
+	
+	(2) $(\Leftarrow)$ Si ha che, dato che il ricoprimento di $K$ con i $K_{i}$ è disgiunto (almeno rispetto a quanto rilevabile da $\mathcal H^{s}$), vale
+	$$\mathcal H^{s}(K) = \sum_{i}\mathcal H^{s}(K_{i}) = \sum_{i}r_{i}^{s}\mathcal H^{s}(K) = \mathcal H^{s}(K)\sum_{i}r_{i}^{s},$$
+	quindi dato che $K$ è un $s$-insieme, ossia $0<\mathcal H^{s}(K) <\infty$, possiamo dividere per tale misura ottenendo $1 = \sum_{i}r_{i}^{s}$ ma dato che tale equazione ha soluzione unica che sappiamo essere $D$, vale $s = D$.
+	$(\Rightarrow)$ Si ha 
+	$$\mathcal H^{D}(K) \leq \sum_{i}\mathcal H^{D}(K_{i}) = \sum_{i}r_{i}^{D}\mathcal H^{D}(K) = \mathcal H^{D}(K)$$
+	per cui in realtà vale l'uguaglianza, da cui segue che i $K_{i}$ non possono avere intersezione di misura positiva.
+\end{proof}
+
+Ricordiamo la 
+\begin{definizione}
+	Diciamo che il nostro IFS $S$ soddisfa la \emph{open set condition} (OSC) se esiste un aperto $O\neq\emptyset$ tale che:
+	\begin{enumerate}
+		\item $\Phi(O) \subseteq O$;
+		\item se $i\neq j$, allora $S_{i}(O)\cap S_{j}(O) = \emptyset$.
+	\end{enumerate}
+\end{definizione}
+
+\begin{osservazione}
+	Se le due condizioni valgono per un qualche insieme \emph{chiuso} $H$, allora valgono anche per un suo ingrossamento $H(\e)$ per un $\e>0$ abbastanza piccolo.
+	Infatti per un $\e>0$ generico si ha 
+	\begin{align*}
+		S_{i}[H(\e)] &= 
+		\bigcup_{x\in H}S_{i}[B(x,\e)] = 
+		\bigcup_{x\in H}B(S_{i}x, r_{i}\e) = \\ &=
+		(S_{i}H)(r_{i}\e) \subseteq
+		\left(\bigcup_{i}S_{i}H\right)(r_{\max}\e) \subseteq
+		H(\e)
+	\end{align*}
+	dove l'ultima inclusione si ha perché $\cup_{i}S_{i}H\subseteq H$ e $r_{\max}<1$.
+	Inoltre se $i\neq j$, sia $d:=\min_{i\neq j}d(H_{i},H_{j})>0$ e prendiamo $\e$ t.c. $r_{\max}\cdot\e<d/2$.
+	Allora si ha 
+	$$S_{i}[H(\e)]\cap S_{j}[H(\e)] = H_{i}(r_{i}\e)\cap H_{j}(r_{j}\e) = \emptyset.$$
+\end{osservazione}
+
+\begin{osservazione}
+	Le $S_{i}$ commutano con gli operatori topologici (interno, chiusura, complementare, bordo...).
+\end{osservazione}
+
+\begin{lemma}
+	Supponiamo che $S$ soddisfi la OSC rispetto a $O$. Allora 
+	\begin{enumerate}
+		\item[(i)] $\forall\mathbf i\in N^{\omega},\; O\supseteq O_{\mathbf i\upharpoonright1}\supseteq O_{\mathbf i\upharpoonright2}\supseteq\dots$;
+		\item[(ii)] $\forall w\in N^{*},\; K_{w}\subseteq O_{w}^{f}$, compreso il caso particolare di $w = \emptyset$; 
+		\item[(iii)] Se $w\neq u$ con $|w| = |u|$, allora $O_{w}\cap K_{u} = \emptyset$;
+		\item[(iv)] Se $\{w_{0},\dots,w_{q-1}\}$ è una barriera stretta e consideriamo due suoi elementi $w_{a}\neq w_{b}$, allora $O_{w_{a}}\cap O_{w_{b}} = \emptyset$.
+	\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+	(i) Ovvio. 
+	
+	(ii) Sia $x\in K$, $x = \pi(\mathbf i)$ e $y\in O$ qualunque. Allora dal teorema fondamentale sugli IFS, dato che $\{y\}$ è compatto si ha che $S_{\mathbf i\upharpoonright n}(y)\xrightarrow{n\to\infty} x$. Dato che $\Phi$ manda $O$ in sé si ha che per ogni $n$, $S_{\mathbf i\upharpoonright n}(y)\in O$ per cui $x$ è un punto di accumulazione per $O$, e quindi $K\subseteq O^{f}$. La tesi segue applicando $S_{w}$ ad entrambi i membri dell'inclusione, dato che questa operazione commuta con quella di chiusura. 
+	
+	(iii) Siano $w\neq u$ con $|w| = |u|$. Allora per ipotesi $O_{w}\cap O_{u} = \emptyset$. Poiché sono entrambi aperti, vale anche $O_{w}\cap O_{u}^{f} = \emptyset$, e quindi poiché per (ii) si ha $K_{u}\subseteq O_{u}^{f}$, vale $O_{w}\cap K_{u} = \emptyset$.
+	
+	(iv) Presi $w$ e $u$ come nell'enunciato, essendo parte di una barriera stretta questi sono inconfrontabili. Ma allora $w = vi\dots$ e $u = vj\dots$ per un qualche $v$ eventualmente vuoto, con $i\neq j$ la prima lettera su cui differiscono. Proprio poiché $i\neq j$, $O_{i}\cap O_{j} = \emptyset$ per cui applicando $S_{v}$ ad entrambi i membri otteniamo $O_{vi}\cap O_{vj} = \emptyset$, da cui per il punto (i) $O_{w}\cap O_{u} = \emptyset$.
+\end{proof}
+
+
+\subsubsection*{$s$-insiemi}
+
+Sappiamo esibire molti esempi di $s$-insiemi. Meno ovvio è trovare esempi di oggetti che \emph{non} sono $s$-insiemi.
+
+\begin{esempio}[Successione di insiemi di Cantor]
+	Consideriamo una successione $0<r_{1}<r_{2}<\dots$ con $r_{n}\to1/2$, e l'IFS associato composto dalle due mappe che danno l'insieme di Cantor opportunamente corrette: $x\mapsto r_{n}x$, $x\mapsto r_{n}x + (1-r_{n})$.
+	Esso ha un certo attrattore $C_{n}$ che ha misura di Lebesgue 0. D'altro canto però vale banalmente la OSC con $O = (0,1)$, per cui $\dim_{H}C_{n} = D_{n}$ con $D_{n}$ dato da $2r_{n}^{D_{n}} = 1$, che ha come soluzione 
+	$$D_{n} = \frac{\log(1/2)}{\log r_{n}}\xrightarrow{n\to\infty}1.$$
+	Questo implica che $\bigcup_{n\geq0}C_{n}$ ha ancora misura di Lebesgue 0 (è unione numerabile di insiemi di $\lambda$-misura nulla) ma dimensione di Hausdorff 1. Non è dunque un $1$-insieme.
+\end{esempio}
+
+\begin{esempio}[Numeri malapprossimabili]
+	
+\end{esempio}
+
+\subsection{Densità locale e similitudini}
+
+C'è un interessante risultato che riguarda la misura stazionaria nel caso di IFS di similitudini. Per arrivarci ci occorre enunciare due teoremi importanti e dimostrare un lemma.
+
+\begin{definizione}
+	Fissato $x\in\R^{n}$, $\mu\in\mathcal M$ e $s\in\R_{\geq0}$, la \emph{densità locale $s$-dimensionale inferiore [superiore] di $\mu$ in $x$} è 
+	\begin{align*}
+		\underline\theta^{s}(\mu, x) &:= \liminf_{\e\to0} \frac{\mu(B(x,\e))}{\gamma(s)\cdot\e^{s}}\\
+		\Bigg[\overline\theta^{s}(\mu, x) &:= \limsup_{\e\to0} \frac{\mu(B(x,\e))}{\gamma(s)\cdot\e^{s}}\Bigg]
+	\end{align*}
+	dove con $B(x,\e)$ intendiamo la palla chiusa di centro $x$ e raggio $\e$, con $\gamma(s) = \frac{\pi^{s/2}}{\Gamma(s/2 + 1)}$ la misura della palla unitaria $s$-dimensionale.
+\end{definizione}
+Quindi in pratica la densità locale misura quanto è ``massiva'' una palla infinitesimale centrata in $x$ misurata con $\mu$ rispetto a quella misurata con la misura di Lebesgue.
+
+\begin{teorema}[di densità di Lebesgue]
+	Sia $A\subseteq\R^{n}$ Lebesgue-misurabile con $\lambda(A)>0$. Allora per $\lambda$-ogni $x\in\R^{n}$ si ha 
+	$$
+	\underline\theta^{n}(\lambda\lfloor A, x) = \overline\theta^{n}(\lambda\lfloor A, x) = 
+	\begin{cases}
+		0 & x\not\in A\\
+		1 & x\in A.
+	\end{cases}$$
+\end{teorema}
+
+Si ha una parziale inversa di tale teorema. 
+
+\begin{teorema}[Federer]
+	Sia $\mu\in\mathcal M$ una misura finita e $A$ un boreliano. Allora:
+	\begin{enumerate}
+		\item se per una certa costante $d_{1}$ per cui $\forall x\in A\; d_{1} \leq \overline\theta^{s}(\mu,x)$, allora $d_{1}\cdot\mathcal H^{s}(A)\leq\mu(A)$;
+		\item se per una costante $d_{2}$ vale $\forall x\in A\; \overline\theta^{s}(\mu,x)\leq d_{2}$, allora $\mu(A) \leq 2^{s}d_{2}\cdot\mathcal H^{s}(A)$.
+	\end{enumerate}
+	In particolare, se $\overline \theta^{s}(\mu, x)$ è limitata sia dall'alto che dal basso in modo indipendente da $x$ allora 
+	$$\mu(A) \neq 0, +\infty \iff \mathcal H^{s}(A) \neq 0, +\infty.$$
+\end{teorema}
+
+Dimostriamo ora un lemma ed un teorema importanti. 
+
+\begin{lemma}
+	Siano $0<c_{1}<c_{2}<+\infty$, $x\in\R^{n}$, $r>0$. Inoltre sia $\{O_{i}\}_{i\in I}$ una famiglia di aperti disgiunti tali che ogni $O_{i}$ contiene una palla chiusa di raggio $rc_{1}$ ed è contenuto in una palla chiusa di raggio $rc_{2}$.
+	Allora $$\#\{i: B(x,r)\cap O_{i}^{f}\neq\emptyset\} \leq \left(\frac{1+2c_{2}}{c_{1}}\right)^{n}.$$
+\end{lemma}
+\begin{proof}
+	Supponiamo che $O_{0}^{f}, \dots, O_{t-1}^{f}$ intersechino $B(x,r)$. Allora è facile vedere (provare a fare il disegno in $\R^{2}$) che $O_{0}^{f},\dots,O_{t-1}^{f}\subseteq B(x, (1+2c_{2})r)$. Poiché ognuno di questi aperti contiene una pallina chiusa $B(a_{i},rc_{1})$, si ha in particolare
+	$$\bigcup_{i=0}^{t-1}B(a_{i}, rc_{1}) \subseteq B(x, (1+2c_{2})r).$$ 
+	Ma allora passando alle misure vale 
+	$$t\gamma(n)(c_{1}r)^{n}\leq \gamma(n)[(1+2c_{2})r]^{n},$$
+	da cui si trova $t\leq \left(\frac{1+2c_{2}}{c_{1}}\right)^{n}$.
+\end{proof}
+
+\begin{teorema}
+	Sia $S = \{S_{0},\dots,S_{N-1}\}$ un IFS \textbf{di similitudini} con fattori di contrazione $0<r_{0},\dots,r_{N-1}<1$ con attrattore $K$ e che soddisfa la OSC rispetto ad un aperto $O$. Sia $D$ la dimensione di similitudine di $S$ e poniamo $p_{i}:=r_{i}^{D}$ per ogni $i$ e $\mathbf p :=(p_{0},\dots,p_{N-1})$. Allora:
+	\begin{enumerate}
+		\item $\exists c_{1}, c_{2}:\; \forall x\in K,\; 0<c_{1}\leq\underline\theta^{D}(\mathcal H^{D}\lfloor K, x)\leq\overline\theta^{D}(\mathcal H^{D}\lfloor K, x)\leq c_{2}<\infty$;
+		\item $K$ è un $D$-insieme;
+		\item $\mu = \pi_{*}P_{\mathbf p} = \mathcal H^{D}(-|K) = \dfrac{\mathcal H^{D}\lfloor K}{\mathcal H^{D}(K)}$.
+	\end{enumerate}
+\end{teorema}
+\begin{proof}
+	Consideriamo inizialmente la misura stazionaria $\mu = \pi_{*}P$ e troviamo limitazioni dall'alto e dal basso per $\underline\theta^{D}(\mu,x)\leq\overline\theta^{D}(\mu,x)$ che siano indipendenti da $x$.
+	Consideriamo un generico $x = \pi(\mathbf i)\in K$ ed $\e>0$. Sia $m$ il minimo indice per cui $K_{\mathbf i\upharpoonright m} \subseteq B(x,\e)$; allora $r_{\mathbf i\upharpoonright m}\cdot \diam K\geq \e\cdot r_{\min}$, perché se così non fosse non sarebbe l'$m$ minimo: infatti se valesse la disuguaglianza $r_{\mathbf i\upharpoonright m}\cdot \diam K< \e\cdot r_{\min} \leq \e r_{0},\dots,\e r_{N-1}$ avremmo $\diam K_{\mathbf i\upharpoonright(m-1)} = r_{\mathbf i\upharpoonright(m-1)}\cdot\diam K <\e$, assurdo. 
+	
+	Di conseguenza 
+	\begin{align*}
+	\frac{\mu(B(x,\e))}{\gamma(D)\e^{D}} & \geq
+	\frac{\mu(K_{\mathbf i\upharpoonright m})}{\gamma(D)\e^{D}} = 
+	\frac{p_{\mathbf i \upharpoonright m}}{\gamma(D)\e^{D}} = 
+	\frac{1}{\gamma(D)}\left(\frac{r_{\mathbf i \upharpoonright m}}{\e}\right)^{D} \geq
+	\frac{1}{\gamma(D)}\left(\frac{r_{\min}}{\diam K}\right)^{D}
+	\end{align*}
+	quindi $\underline\theta^{D}(\mu, x) \geq \frac{1}{\gamma(D)}\left(\frac{r_{\min}}{\diam K}\right)^{D} >0$.
+	
+	Fissiamo ora $0<c_{1}<c_{2}<\infty$ in modo che l'insieme $O$ dato per ipotesi contenga una palla chiusa di raggio $c_{1}$ e sia contenuto in una palla chiusa di raggio $c_{2}$. Per ogni $\mathbf j \in N^{\omega}$, sia $q\geq0$ minimo tale che $$r_{\min}\e\overset{(*)}{\leq} r_{\mathbf j\upharpoonright q}\overset{(**)}{\leq} \e.$$
+	Allora la famiglia di tutti i blocchi del tipo $[\mathbf j\upharpoonright q]$ copre $N^{\omega}$ per cui dato che $N^{\omega}$ è compatto possiamo estrarne una sottosuccessione finita (cioè una barriera stretta), sia questa $\mathcal B = \{w_{0}, \dots, w_{t-1}\}$.
+	Per un vecchio lemma si ha che $O_{w_{0}},\dots,O_{w_{t-1}}$ sono aperti disgiunti. Inoltre ogni $O_{w}$ con $w\in\mathcal B$ contiene una palla di raggio $r_{w}c_{1}$ perché $O$ ne contiene una di raggio $c_{1}$.
+	Dunque, per la disuguaglianza $(*)$, $O_{w}$ contiene anche una palla chiusa di raggio $r_{\min}\e c_{1}$, e inoltre è contenuto in una palla chiusa di raggio $r_{w}c_{2}$, per cui per $(**)$ in una di raggio $\e c_{2}$.
+	A questo punto possiamo applicare il lemma precedente, ottenendo 
+	$$\#\{w\in\mathcal B:\; B(x,\e)\cap O_{w}^{f}\neq\emptyset\}\leq \left(\frac{1+2c_{2}}{r_{\min}c_{1}}\right)^{n}.$$
+	
+	Ora, poiché $\forall u\in N^{*}$ si ha $K_{u}\subseteq O_{u}^{f}$, la stessa limitazione vale anche per la cardinalità dell'insieme 
+	$$\mathcal B':=\{w\in\mathcal B:\; B(x,\e)\cap K_{w}\neq \emptyset\}.$$
+	Osservando che $\text{supp}\mu\subseteq K$ e $K = \cup_{w\in\mathcal B}K_{w}$, abbiamo 
+	\begin{align*}
+		\frac{\mu(B(x,\e))}{\gamma(D)\e^{D}} & \leq
+		\frac{1}{\gamma(D)\e^{D}}\sum_{w\in\mathcal B'}\mu(K_{w})\leq
+		\frac{1}{\gamma(D)\e^{D}} \left(\frac{1+2c_{2}}{r_{\min}c_{1}}\right)^{n}\e^{D}
+	\end{align*}
+	dove l'ultima disuguaglianza segue dal fatto che $\mu(K_{w})\leq\e^{D}$ perché se $w\in\mathcal B'\subseteq \mathcal B$, si ha $\mu(K_{w}) = P([w]) = p_{w} = r_{w}^{D}\leq \e^{D}$ di nuovo per $(**)$.
+	Dalla disuguaglianza appena trovata deduciamo quindi che 
+	$$\overline\theta^{D}(\mu,x) \leq \frac{1}{\gamma(D)}\left(\frac{1+2c_{2}}{r_{\min}c_{1}}\right)^{n} <\infty.$$
+	
+	Abbiamo dunque determinato due costanti $m_{1},\; m_{2}$ per cui vale $0<m_{1}\leq\underline\theta^{D}(\mu,x)\leq\overline\theta^{D}(\mu,x)\leq m_{2}<\infty$. Applicando il teorema di Federer abbiamo che $\mu(K) \neq 0,+\infty$ se e solo se $\mathcal H^{D}(K)\neq0, +\infty$. 
+	Ma $\mu(K) = 1$, per cui $K$ risulta un $D$-insieme ed abbiamo dimostrato il punto 2.
+	
+	L'uguaglianza da dimostrare del punto (3) è la seconda, e lo facciamo riciclando una vecchia idea: se dimostriamo che il termine di destra è una misura stazionaria, allora deve essere l'unica misura stazionaria che sappiamo già essere proprio $\mu = \pi_{*}P$. Ricordando un lemma visto in precedenza, $s = D \iff \forall i\neq j,\; \mathcal H^{s}(K_{i}\cap K_{j}) = 0$.
+	Ne segue che 
+	$$\mathcal H^{D}\lfloor K = \sum_{i}\mathcal H^{D}\lfloor K_{i} \overset{(!)}{=} \sum_{i} r_{i}^{D}(S_{i})_{*}(\mathcal H^{D}\lfloor K) = \Phi(\mathcal H^{D}\lfloor K)$$
+	da cui per l'unicità (a meno di costanti moltiplicative) del punto fisso, segue 
+	$$\mu = \frac{\mathcal H^{D}\lfloor K}{\mathcal H^{D}(K)} = \mathcal H^{D}(-|K).$$
+	Verifichiamo l'uguaglianza $(!)$, dimostrando che se $S$ è una similitudine di fattore $r$ e $s\geq0$, allora vale 
+	$$\mathcal H^{s}\lfloor(SK) = r^{s}(S_{*})(\mathcal H^{s}\lfloor K).$$
+	Infatti 
+	\begin{align*}
+	[\mathcal H^{s}\lfloor(SK)](A)& = \mathcal H^{s}(SK\cap A) = \mathcal H^{s}(S(K\cap S^{-1}A))= \\ 
+	&= r^{s}\mathcal H^{s}(K\cap S^{-1}A) = r^{s}(\mathcal H^{s}\lfloor K)(S^{-1}A) = r^{s}[S_{*}(\mathcal H^{s}\lfloor K)](A)
+	\end{align*}
+	per cui anche il punto 3 è stato dimostrato.
+	
+	Infine, nella prima parte della dimostrazione avevamo ottenuto le limitazioni $$0<m_{1}\leq\underline\theta^{D}(\mu,x)\leq\overline\theta^{D}(\mu,x)\leq m_{2}<\infty$$ e ora sappiamo anche che $\mu = \mathcal H^{D}(-|K)$, per cui dato che le costanti moltiplicative passano fuori dalla densità superiore/inferiore, sostituendo si ha 
+	$$0 < m_{1} \leq \frac{\underline\theta^{D}(\mathcal H^{D}\lfloor K, x)}{\mathcal H^{D}(K)} \leq \frac{\overline\theta^{D}(\mathcal H^{D}\lfloor K, x)}{\mathcal H^{D}(K)} \leq m_{2} < \infty.$$
+	Basta moltiplicare tutto per $\mathcal H^{D}(K)$ e si ottiene il punto 1. 
+\end{proof}
+
+\subsection{Barnsley-Vince: IFS topologici, etc.}
+
+La nozione di IFS che abbiamo considerato finora si può generalizzare, definendo IFS un insieme di funzioni $f_{n}:X\to X$ continue, con $X$ semplicemente spazio topologico. Tale insieme, che noi abbiamo sempre supposto finito, si potrebbe prendere infinito. 
+Tuttavia noi manteniamo le ipotesi viste finora, ossia che $X$ sia metrico e completo e che l'insieme di funzioni abbia cardinalità finita $N$.
+
+\begin{definizione}
+	Un \emph{attrattore} per l'IFS $\mathcal F$ è un insieme $A\in\mathcal K(X)$ tale che 
+	\begin{itemize}
+		\item $\Phi(A) = A$; 
+		\item esiste un aperto $U\subset X$ tale che $A\subset U$ e per ogni compatto $S\subset U$ vale il limite $\lim_{k\to\infty}\Phi^{k}(S) = A$, inteso nella metrica di Hausdorff.
+	\end{itemize}
+\end{definizione}
+
+\begin{definizione}
+	Il \emph{bacino di attrazione} $B$ di un attrattore $A$ dell'IFS $\mathcal F$ è il più grande insieme aperto $U$ per cui vale la seconda condizione della definizione precedente. 
+\end{definizione}
+\begin{definizione}
+	Il \emph{repulsore duale} di un attrattore $A$ dell'IFS $\mathcal F$ è l'insieme $A^{*}:=X\setminus B$, dove $B$ è il bacino di attrazione di $A$.
+\end{definizione}
+
+\begin{osservazione}
+	Questi due insiemi dipendono strettamente dallo spazio $X$ in cui si ambienta l'IFS: anche mantenendo lo stesso insieme di funzioni, bacino di attrazione e repulsore duale possono variare!
+\end{osservazione}
+
+\begin{definizione}
+	L'IFS $\mathcal F = \{X; f_{1},\dots,f_{N}\}$ si dice \emph{invertibile} quando le mappe che lo compongono sono tutte degli omeomorfismi $X\to X$. In tal caso, l'IFS dato da $\mathcal F^{-1}:=\{X; f_{1}^{-1}, \dots, f_{N}^{-1}\}$ si dice \emph{IFS inverso} di $\mathcal F$.
+\end{definizione}
+Sotto alcune ipotesi, un attrattore per $\mathcal F^{-1}$ è il repulsore duale di un attrattore di $\mathcal F$.
+
+A seconda dello spazio ambiente $X$ e del tipo di trasformazioni che compongono gli IFS, questi si classificano in modo intuitivo. Ad esempio se $X = \R^{d}$ e le funzioni sono affinità, si parla di IFS affine; se le funzioni sono similitudini, si parla di IFS di similitudini. Un caso che non abbiamo ancora affrontato è quello di $X = \mathbb{RP}^{d}$ con proiettività, che ovviamente si dirà IFS proiettivo. L'ultimo esempio che diamo è quello in cui $X = \hat{\mathbb C} = \mathbb C\cup \infty$ e le funzioni sono trasformazioni lineari fratte complesse, che si dicono IFS di M\"obius.
+
+Un fatto interessante è che la contrattività dell'IFS non è essenziale per l'esistenza di un attrattore nel caso degli IFS proiettivi: un controesempio è nell'articolo di Barnsley e Vince (2013). Valgono i seguenti risultati.
+
+\begin{teorema}
+	Un IFS affine, di M\"obius o proiettivo può avere al più un attrattore.
+\end{teorema}
+\begin{teorema}
+	\begin{enumerate}
+		\item Un IFS affine ha un attrattore se e solo se è contrattivo.
+		\item Un IFS di M\"obius ha un attrattore $A\neq\hat{\mathbb C}$ se e solo se esiste un aperto non vuoto $U$ tale che $U^{f}\neq\hat{\mathbb C}$ e l'IFS risulti contrattivo se ristretto a $U$.
+		\item Un IFS proiettivo ha un attrattore che non interseca almeno un iperpiano se e solo se esiste un aperto non vuoto $U$ tale che l'IFS risulti contrattivo in $U^{f}$.
+	\end{enumerate}
+\end{teorema}
+
+Una precisazione che va fatta dopo aver enunciato questo risultato è che il fatto che l'IFS sia contrattivo non è necessariamente vero per tutte le possibili metriche che si possono considerare. Tuttavia, è sempre possibile definire un'opportuna metrica per cui un IFS con attrattore risulti contrattivo. 
+Nel caso degli IFS affini tale metrica è quella di Minkowski, cioè
+$$d_{C}(x,y) = \|x-y\|_{C}$$
+dove si considera un corpo convesso centrato $C$ che induce 
+$$\|x\|_{C} = \inf\{\lambda\geq0:\,x\in\lambda C\}.$$
+Nel caso degli IFS proiettivi, la metrica giusta è una metrica di Hilbert modificata, definita sull'interno di un corpo convesso centrato $C$ come 
+$$d_{C}(x,y):=\log R(a,b,x,y) = \log\frac{|ay||bx|}{|ax||by|}$$
+dove $a$ e $b$ sono i punti in cui la retta che congiunge $x$ e $y$ interseca il bordo di $C$.
+Infine, un IFS di M\"obius con attrattore è sempre contrattivo in un qualche insieme aperto $U$ rispetto alla seguente metrica definita su $\hat{\mathbb C}$: 
+$$d_{U}(x,y) = \max_{z\not\in U}\log\frac{|z-x|}{|z-y|} + \max_{x\not\in U}\log\frac{|z-y|}{|z-x|}.$$
+
+Ad ogni modo si può evitare il ricorso a metriche: infatti ogni IFS dei tre tipi citati che abbia un attrattore è anche contrattivo in un senso topologico. 
+\begin{definizione}
+	Un IFS $\mathcal F$ si dice \emph{topologicamente contrattivo} su un insieme compatto $K\subset X$ se $\Phi(K)\subset K^{o}$.
+\end{definizione}
+\begin{teorema}
+	\begin{enumerate}
+		\item Un IFS affine ha un attrattore se e solo se $\Phi$ è topologicamente contrattiva su un qualche corpo convesso.
+		\item Un IFS di M\"obius su $\hat{\mathbb C}$ ha un attrattore $A\neq \hat{\mathbb C}$ se e solo se $\Phi$ è topologicamente contrattiva su un qualche sottoinsieme proprio di $\hat{\mathbb C}$ compatto.
+		\item Un IFS proiettivo ha un attrattore che evita un iperpiano se e solo se $\Phi$ è topologicamente contrattiva sull'unione di un numero finito non nullo di corpi convessi disgiunti.
+	\end{enumerate}
+\end{teorema}
+
+Infine citiamo un risultato che giustifica il \emph{chaos game}, introducendo prima la nozione di spazio proprio.
+
+\begin{lemma}
+	Sia $(X,d)$ uno spazio metrico. Sono equivalenti:
+	\begin{enumerate}
+		\item i compatti sono tutti e soli i chiusi e limitati; 
+		\item ogni palla chiusa è compatta.
+	\end{enumerate}
+	Uno spazio che soddisfa tali condizioni si dice \emph{proprio}.
+\end{lemma}
+\begin{proof}
+	L'implicazione $(\Rightarrow)$ è ovvia. Vediamo l'altra.
+	I compatti sono sempre chiusi e limitati. Viceversa, preso un chiuso $C$ limitato da $R>0$, se $a\in C$ allora il chiuso sta nella palla chiusa (e dunque compatta per ipotesi) $B(a,R)$. Tutti i chiusi in compatti sono compatti, quindi in particolare lo è anche $C$.
+\end{proof}
+
+\begin{esempio}
+	$\R^{n}$ e qualunque spazio $X$ compatto sono propri. Un esempio di spazio improprio è $\ell_{2}$ (in cui ad esempio la palla unitaria chiusa non è compatta, cfr. Istituzioni di Analisi Superiore).
+\end{esempio}
+
+\begin{teorema}
+	Sia $X$ uno spazio metrico completo proprio e $\mathcal F = \{X;f_{1},\dots,f_{N}\}$ un IFS con attrattore $A$ di bacino $B$. Se $(x_{n})_{n}$ è un'orbita casuale di $x_{0}\in B$ tramite $\mathcal F$, allora tale orbita produce $A$ quasi certamente, ossia $$A = \lim_{K\to\infty}\{x_{n}:n\geq K\} = \bigcap_{K\geq1}\overline{\{x_{n}:n\geq K\}}.$$
+\end{teorema}
+
+
+
+
+
+
+\section{Joint spectral radius e norme estreme}
+\subsection{Raggio spettrale congiunto}
+
+\begin{esempio}[shearing del piano]
+\end{esempio}
+
+Il seguente lemma motiva una definizione che stiamo per dare.
+
+\begin{lemma}
+	Consideriamo una mappa lineare $L:\R^{2}\to \R^{2}$ senza sottospazi invarianti non banali (cioè senza autovalori reali). Allora esiste un'ellissi $E$ e un numero reale $\lambda>0$ tali che $L(E) = \lambda E$.
+\end{lemma}
+\begin{proof}
+	Avendo $L$ due autovalori complessi coniugati, esiste $S\in GL_{2}\R$ tale che 
+	$$M := S^{-1}LS = \lambda   \begin{pmatrix} % or pmatrix or bmatrix or Bmatrix or ...
+	      \cos\theta & -\sin\theta \\
+	      \sin\theta & \cos\theta \\
+	   \end{pmatrix}$$
+	per un certo angolo $\theta$ e un $\lambda>0$. Se consideriamo l'immagine $E = S(D)$ del disco unitario standard $D$, abbiamo facilmente da $M(D) = \lambda D$ che $L(E) = \lambda E$.
+\end{proof}
+
+\begin{definizione}
+	Un IFS $\mathcal R = \{R_{0}, \dots, R_{N-1}\}$ con $R_{i}\in\mathcal M^{n\times n}\R$ si dice \emph{irriducibile} se non esiste un sottospazio $V\subseteq\R^{n}$ non banale invariante in avanti per tutti gli $R_{i}$.
+\end{definizione}
+
+Notiamo che dall'irriducibilità non segue l'unicità dell'eventuale insieme invariante.
+
+\begin{esempio}
+	Se consideriamo $\mathcal R = \left\{\begin{pmatrix} % or pmatrix or bmatrix or Bmatrix or ...
+	      \cos\theta & -\sin\theta \\
+	      \sin\theta & \cos\theta \\
+	   \end{pmatrix}\right\}$, abbiamo ovviamente un IFS irriducibile. 
+	   Se $\theta/\pi\in\mathbb Q$, esistono un sacco (infiniti!) autoinsiemi di forme diverse. Se invece $\theta/\pi\not\in\mathbb Q$, l'unico autoinsieme (sempre a meno di dilatazione) è il cerchio centrato nell'origine.
+\end{esempio}
+
+Iniziamo a parlare di raggio spettrale congiunto. Per poter dare la definizione occorrono prima dei risultati preliminari.
+
+Dato $\mathcal R = \{R_{0}, \dots, R_{N-1}\}$ con $R_{i}\in \mathcal M^{n\times n}\R$, si pone 
+$$\mathcal R^{n}:=\{R_{w}:\, w\in N^{n}\},\quad \|\mathcal R^{n}\|:=\max\{\|R_{w}\|: w\in N^{n}\}.$$
+
+\begin{lemma}[di Fekete]
+	Sia $a_{1},a_{2},\dots \in\R$ una successione subadditiva, ossia tale che $a_{n+m}\leq a_{n}+a_{m}$ per ogni $n,m$. Allora $\lim_{n\to\infty}\frac{a_{n}}{n}$ esiste e vale $\inf_{n\geq1}\frac{a_{n}}{n}$. (Oss.: il limite può eventualmente valere $-\infty$).
+\end{lemma}
+\begin{proof}
+	Poniamo $a := \inf_{n\geq1}\frac{a_{n}}{n}$. Osservando che per subadditività
+	$$a_{n}\leq a_{1} + a_{n-1} \leq 2a_{1} + a_{n-2}\leq\dots\leq na_{1},$$
+	abbiamo che $a\leq a_{1}$.
+	Fissiamo ora $\e>0$; per definizione di estremo inferiore esiste $m$ con $a_{m}<m(a+\e)$.
+	Facendo la divisione con resto, per ogni $n$ vale 
+	$$\begin{cases}
+		n = q_{n}m + r_{n}\\
+		0\leq r_{n}< m.
+	\end{cases}$$
+	Analogamente a quanto visto sopra, vale 
+	$$a_{n} = a_{q_{n}m +r_{n}} \leq q_{n}a_{m} + a_{r_{n}} < q_{n}m(a+\e) + \underbrace{\sup\{0,a_{1},\dots, a_{m-1}\}}_{=:b}.$$
+	Dunque  
+	$$a \leq \liminf_{n\to\infty}\frac{a_{n}}{n} \leq \limsup_{n\to\infty}\frac{a_{n}}{n} \leq \limsup_{n\to\infty}\frac{q_{n}m(a + \e) + b}{q_{n}m + r_{n}} = a + \e$$
+	per cui per $\e\to0$ tutto collassa su $a$ e abbiamo concluso.
+\end{proof}
+\begin{corollario}[versione moltiplicativa]
+	Sia $b_{1},b_{2},\dots$ sottomoltiplicativa ($b_{m+n}\leq b_{m}b_{n}$). Allora $\lim_{n\to\infty}b_{n}^{1/n}$ esiste e vale $\inf_{n} b_{n}^{1/n}$. Può eventualmente valere 0.
+\end{corollario}
+\begin{proof}
+	Basta applicare $\exp$ al risultato del lemma di Fekete. 
+\end{proof}
+
+Applicando quest'ultimo corollario alla successione $b_{1} = \|\mathcal R\|$, $b_{2} = \|\mathcal R^{2}\|$,$\dots$, che è sottomoltiplicativa per le note proprietà delle norme operatoriali, possiamo giustificare la seguente 
+\begin{definizione}
+	Il numero $\tilde\rho(\mathcal R) = \lim_{n\to\infty}\|\mathcal R^{n}\|^{1/n} = \inf_{n}\|\mathcal R^{n}\|^{1/n}$ è detto \emph{joint spectral radius} di $\mathcal R$. Sta in $\R_{\geq0}$ ed è dominato da $\|\mathcal R\|$, quindi in realtà sta in $[0, \|\mathcal R\|]$.
+\end{definizione}
+\begin{definizione}
+	Una norma $\|\cdot\|$ si dice \emph{estrema per $\mathcal R$} se $\tilde\rho(\mathcal R) = \|\mathcal R\|$, ossia se per essa il JSR risulta il massimo possibile.
+\end{definizione}
+\begin{definizione}
+	Preso $n\geq1$, poniamo $\rho(\mathcal R^{n}):=\max\{\rho(R_{w}):\, w\in N^{n}\}$, con $\rho$ raggio spettrale in senso classico, ottenendo quindi una estensione di quest'ultimo ad un insieme finito di matrici.
+\end{definizione}
+
+Ci si potrebbe chiedere come sono legati tra loro il raggio spettrale ``classico'' e il joint spectral radius. Vale l'importante 
+\begin{teorema}[di Berger-Wang]
+	$\tilde\rho(\mathcal R) = \limsup_{n\to\infty}[\rho(\mathcal R^{n})]^{1/n} = \sup_{n}[\rho(\mathcal R^{n})]^{1/n}$.
+\end{teorema}
+\begin{proof}
+	Dimostriamo solo l'uguaglianza facile, la seconda. 
+	Senz'altro vale la disuguaglianza $\leq$, per cui resta da dimostrare l'altra. Per ogni $n$, se $r = \rho(\mathcal R^{n})^{1/n}$ è realizzato da un certo $R_{w}\in \mathcal R^{n}$, allora $r\leq \rho(\mathcal R^{2n})^{1/(2n)}, \rho(\mathcal R^{3n})^{1/(3n)},\dots$ in quanto il massimo raggio spettrale certamente non decresce (basti pensare che è assicurato che valga almeno $r$ considerando $R_{w}^{2}, R_{w}^{3},\dots$). Abbiamo quindi trovato tutta una sottosuccessione che vale almeno $r$, e di conseguenza vale anche la disuguaglianza $\geq$.
+\end{proof}
+\begin{osservazione}
+	È noto che vale sempre $\rho(R)\leq\|R\|$, e di conseguenza passando ai massimi si ottiene $\rho(\mathcal R) \leq \|\mathcal R\|$. In particolare, il $\sup$ del teorema è dominato da $\|\mathcal R\|\geq\|\mathcal R^{n}\|^{1/n}$.
+\end{osservazione}
+
+\begin{esercizio}
+	Si consideri l'insieme $$\mathcal R = \left\{\begin{pmatrix}0 & 1 \\ 0 & 0 \end{pmatrix}, \begin{pmatrix}0 & 0 \\ 1 & 0 \end{pmatrix}\right\}$$
+	e ci si convinca che per definire il JSR non va bene usare il $\lim$ al posto del $\limsup$. (Suggerimento: fare un po' di moltiplicazioni tra matrici).
+\end{esercizio}
+

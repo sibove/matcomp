@@ -1,0 +1,51 @@
+%!TEX encoding = UTF-8 Unicode
+\documentclass[a4paper,12pt,italian,titlepage]{article}
+  \usepackage{babel, indentfirst, amsmath, amssymb, amsthm, algorithm, algorithmic, bbm, graphicx, tikz-cd}
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage[hidelinks]{hyperref}
+  \usepackage{fullpage}
+  
+  \graphicspath{{Immagini/}}
+  
+  \newcommand{\N}{\mathbb{N}}  
+  \newcommand{\R}{\mathbb{R}}
+  \newcommand{\CC}{\mathbb{C}}
+  \newcommand{\e}{\varepsilon}
+  \DeclareMathOperator{\diam}{diam}
+  \DeclareMathOperator{\stab}{stab}
+  \DeclareMathOperator{\conv}{conv}
+  \DeclareMathOperator{\Mob}{M\ddot ob}
+  
+  \theoremstyle{definition} \newtheorem{definizione}{Definizione}
+  \theoremstyle{remark} \newtheorem{osservazione}[definizione]{Osservazione}
+  \theoremstyle{definition} \newtheorem{esempio}{Esempio}
+  \theoremstyle{definition} \newtheorem{esercizio}{Esercizio}
+  \theoremstyle{plain} \newtheorem{teorema}{Teorema}
+  \theoremstyle{plain} \newtheorem{lemma}[teorema]{Lemma}
+  \theoremstyle{plain} \newtheorem{prop}[teorema]{Proprietà}
+  \theoremstyle{plain} \newtheorem{proposizione}[teorema]{Proposizione}
+  \theoremstyle{plain} \newtheorem{corollario}[teorema]{Corollario}
+  
+  \title{Matematiche complementari\\ A.A. 2021/2022}
+  \author{Ultimo aggiornamento:}
+  \date{\today}
+\begin{document}
+
+\begin{titlepage}
+	\maketitle
+	\author
+	\date
+\end{titlepage}
+\tableofcontents
+\newpage
+
+
+\input{Lezioni/lezione01.tex}
+\input{Lezioni/lezione02.tex}
+\input{Lezioni/lezione03.tex}
+
+
+
+
+\end{document}
